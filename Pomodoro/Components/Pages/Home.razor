@@ -49,6 +49,8 @@
     private void Reset()
     {
         timeSpan = new TimeSpan(0, 0, 0, 25, 900);
+        formattedTime = timeSpan.ToString(@"mm\:ss");
         InvokeAsync(() => StateHasChanged());
+        Pause();
     }
 }
