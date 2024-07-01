@@ -1,0 +1,54 @@
+﻿@page "/"
+@using System.Timers
+
+<h1>@formattedTime</h1>
+<button class="btn btn-warning" @onclick="Pause">PAUSE</button>
+<button class="btn btn-primary" @onclick="Start">START</button>
+<button class="btn btn-danger" @onclick="Reset">RESET</button>
+
+@code {
+    private TimeSpan timeSpan = new TimeSpan(0,0,0,25,900);
+    private string formattedTime = string.Empty;
+    private Timer timer = new(100);
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SetTimer();
+    }
+
+    private void SetTimer()
+    {
+        formattedTime = timeSpan.ToString(@"mm\:ss");
+        timer.Elapsed += ReduceMilliseconds;
+        timer.AutoReset = true;
+        timer.Enabled = true;
+    }
+
+    private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
+    {
+        if (timeSpan.TotalMilliseconds == 0)
+        {
+            timer.Stop();
+            return;
+        }
+        timeSpan = timeSpan.Subtract(TimeSpan.FromMilliseconds(100));
+        formattedTime = timeSpan.ToString(@"mm\:ss");
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    private void Pause()
+    {
+        timer.Stop();
+    }
+
+    private void Start()
+    {
+        timer.Start();
+    }
+
+    private void Reset()
+    {
+        timeSpan = new TimeSpan(0, 0, 0, 25, 900);
+        InvokeAsync(() => StateHasChanged());
+    }
+}
