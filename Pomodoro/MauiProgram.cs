@@ -16,6 +16,7 @@ namespace Pomodoro
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton<Settings>();
 
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();

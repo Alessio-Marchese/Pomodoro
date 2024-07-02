@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject Settings settings
 @using System.Timers
 @using Pomodoro.Entities
 
@@ -52,7 +53,7 @@
 
     private void SetProduction()
     {
-        timeSpan = new TimeSpan(0, 0, 0, Settings.Production, 100);
+        timeSpan = new TimeSpan(0, 0, 0, settings.Production, 100);
         formattedTime = timeSpan.ToString(@"mm\:ss");
         InvokeAsync(() => StateHasChanged());
         Break();
@@ -60,7 +61,7 @@
 
     private void SetShortPause()
     {
-        timeSpan = new TimeSpan(0, 0, 0, Settings.ShortPause, 100);
+        timeSpan = new TimeSpan(0, 0, 0, settings.ShortPause, 100);
         formattedTime = timeSpan.ToString(@"mm\:ss");
         InvokeAsync(() => StateHasChanged());
         Break();
@@ -68,7 +69,7 @@
 
     private void SetLongPause()
     {
-        timeSpan = new TimeSpan(0, 0, 0, Settings.LongPause, 100);
+        timeSpan = new TimeSpan(0, 0, 0, settings.LongPause, 100);
         formattedTime = timeSpan.ToString(@"mm\:ss");
         InvokeAsync(() => StateHasChanged());
         Break();

@@ -1,0 +1,13 @@
+﻿@page "/settings"
+@using Pomodoro.Entities
+@inject Settings settings
+<h3>Settings</h3>
+<h5>Production</h5>
+<InputNumber @bind-Value="settings.Production"></InputNumber>
+<br /><br />
+<h5>Short Pause</h5>
+<InputNumber @bind-Value="settings.ShortPause"></InputNumber>
+<br /><br />
+<h5>Long Pause</h5>
+<InputNumber @bind-Value="settings.LongPause"></InputNumber>
+
