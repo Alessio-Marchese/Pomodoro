@@ -1,45 +1,73 @@
 ﻿@page "/settings"
+@using Pomodoro.Components.Pages.SmallComponents
+@using Pomodoro.Entities
 
 <h3>Settings</h3>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col text-center square-col" @onclick="() => SetChangingValue(Production)">
+            <p>@Production.Time</p>
+        </div>
+        <div class="col text-center square-col" @onclick="() => SetChangingValue(ShortPause)">
+            <p>@ShortPause.Time</p>
+        </div>
+        <div class="col text-center square-col" @onclick="() => SetChangingValue(LongPause)">
+            <p>@LongPause.Time</p>
+        </div>
+    </div>
+</div>
+@if(IsChanging)
+{
+    <ModifyTimer Value="changingValue.Time" Save="@SaveChangedValue"></ModifyTimer>
+}
 
-<h5>Production</h5>
-<InputNumber @bind-Value="Production" @oninput="ChangeProduction"></InputNumber>
-<br /><br />
-<h5>Short Pause</h5>
-<InputNumber @bind-Value="ShortPause" @oninput="ChangeShortPause"></InputNumber>
-<br /><br />
-<h5>Long Pause</h5>
-<InputNumber @bind-Value="LongPause" @oninput="ChangeLongPause"></InputNumber>
+
+<style>
+    .square-col {
+        font-size: 45px;
+        text-align: center;
+        border: 2px, solid, black;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+</style>
 
 @code{
-    private int Production;
+    private bool IsChanging = false;
 
-    private int ShortPause;
+    private PomodoroTimer? changingValue;
 
-    private int LongPause;
+    private PomodoroTimer Production = new ("Production",Preferences.Get("Production", 25));
 
-    protected override void OnInitialized()
+    private PomodoroTimer ShortPause = new ("ShortPause", Preferences.Get("ShortPause", 5));
+
+    private PomodoroTimer LongPause = new ("LongPause", Preferences.Get("LongPause", 10));
+
+    private void SaveChangedValue(int newValue)
     {
-        base.OnInitialized();
-        Production = Preferences.Get("Production", 25);
-        ShortPause = Preferences.Get("ShortPause", 5);
-        LongPause = Preferences.Get("LongPause", 10);
+        if(changingValue.Name.ToUpper().Equals(Production.Name.ToUpper()))
+        {
+            Production.Time = newValue;
+            Preferences.Set("Production", Production.Time);
+        }
+        else if (changingValue.Name.ToUpper().Equals(ShortPause.Name.ToUpper()))
+        {
+            ShortPause.Time = newValue;
+            Preferences.Set("ShortPause", ShortPause.Time);
+        }
+        else if (changingValue.Name.ToUpper().Equals(LongPause.Name.ToUpper()))
+        {
+            LongPause.Time = newValue;
+            Preferences.Set("LongPause", LongPause.Time);
+        }
+        IsChanging = false;
     }
-    private void ChangeProduction(ChangeEventArgs e)
+    private void SetChangingValue(PomodoroTimer pomodoroTimer)
     {
-            Production = Convert.ToInt32(e.Value);
-            Preferences.Set("Production", Production);
+        changingValue = pomodoroTimer;
+        IsChanging = true;
     }
-    private void ChangeShortPause(ChangeEventArgs e)
-    {
-        ShortPause = Convert.ToInt32(e.Value);
-        Preferences.Set("ShortPause", ShortPause);
-    }
-    private void ChangeLongPause(ChangeEventArgs e)
-    {
-        LongPause = Convert.ToInt32(e.Value);
-        Preferences.Set("LongPause", LongPause);
-    }
+        
 }
 
 

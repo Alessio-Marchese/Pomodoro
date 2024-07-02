@@ -1,0 +1,83 @@
+﻿<div class="popup-container">
+    <div class="popup-content">
+        <div class="popup-icon">
+            <i class="bi bi-dash-circle-fill bigger-icon" @onclick="TriggerDecrease"></i>
+        </div>
+        <div class="popup-circle">
+            <svg height="200" width="200">
+                <text x="100" y="110" text-anchor="middle" alignment-baseline="middle" font-size="80" fill="black">@Value</text>
+            </svg>
+        </div>
+        <div class="popup-icon">
+            <i class="bi bi-plus-circle-fill bigger-icon" @onclick="TriggerIncrease"></i>
+        </div>
+    </div>
+    <div class="popup-complete">
+        <i class="bi bi-check-circle-fill bigger-icon" @onclick="TriggerSave"></i>
+    </div>
+</div>
+
+<style>
+    .popup-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .popup-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .popup-icon {
+        display: inline;
+    }
+
+    .popup-circle {
+        display: inline;
+        flex: 1;
+        text-align: center;
+    }
+
+    .popup-complete {
+        display: flex;
+        text-align: center;
+    }
+
+    .bigger-icon {
+        font-size: 35px;
+    }
+
+
+</style>
+
+@code {
+    [Parameter]
+    public int Value { get; set; }
+    [Parameter]
+    public EventCallback<int> Save { get; set; }
+
+    private void TriggerSave()
+    {
+        Save.InvokeAsync(Value);
+    }
+
+    private void TriggerIncrease()
+    {
+        Value++;
+    }
+
+    private void TriggerDecrease()
+    {
+        Value--;
+    }
+}
