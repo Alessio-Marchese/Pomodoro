@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Pomodoro.Entities;
 
 namespace Pomodoro
 {

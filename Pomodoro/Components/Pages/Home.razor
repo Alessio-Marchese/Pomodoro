@@ -1,19 +1,23 @@
 ﻿@page "/"
 @using System.Timers
+@using Pomodoro.Entities
 
 <h1>@formattedTime</h1>
-<button class="btn btn-warning" @onclick="Pause">PAUSE</button>
+<button class="btn btn-warning" @onclick="Break">BREAK</button>
 <button class="btn btn-primary" @onclick="Start">START</button>
-<button class="btn btn-danger" @onclick="Reset">RESET</button>
+<button class="btn btn-secondary" @onclick="SetProduction">PRODUCTION</button>
+<button class="btn btn-secondary" @onclick="SetShortPause">SHORT PAUSE</button>
+<button class="btn btn-secondary" @onclick="SetLongPause">LONG PAUSE</button>
 
 @code {
-    private TimeSpan timeSpan = new TimeSpan(0,0,0,25,900);
+    private TimeSpan timeSpan;
     private string formattedTime = string.Empty;
     private Timer timer = new(100);
     protected override void OnInitialized()
     {
         base.OnInitialized();
         SetTimer();
+        SetProduction();
     }
 
     private void SetTimer()
@@ -36,7 +40,7 @@
         InvokeAsync(() => StateHasChanged());
     }
 
-    private void Pause()
+    private void Break()
     {
         timer.Stop();
     }
@@ -46,11 +50,27 @@
         timer.Start();
     }
 
-    private void Reset()
+    private void SetProduction()
     {
-        timeSpan = new TimeSpan(0, 0, 0, 25, 900);
+        timeSpan = new TimeSpan(0, 0, 0, Settings.Production, 100);
         formattedTime = timeSpan.ToString(@"mm\:ss");
         InvokeAsync(() => StateHasChanged());
-        Pause();
+        Break();
+    }
+
+    private void SetShortPause()
+    {
+        timeSpan = new TimeSpan(0, 0, 0, Settings.ShortPause, 100);
+        formattedTime = timeSpan.ToString(@"mm\:ss");
+        InvokeAsync(() => StateHasChanged());
+        Break();
+    }
+
+    private void SetLongPause()
+    {
+        timeSpan = new TimeSpan(0, 0, 0, Settings.LongPause, 100);
+        formattedTime = timeSpan.ToString(@"mm\:ss");
+        InvokeAsync(() => StateHasChanged());
+        Break();
     }
 }
