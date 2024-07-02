@@ -1,13 +1,45 @@
 ﻿@page "/settings"
-@using Pomodoro.Entities
-@inject Settings settings
+
 <h3>Settings</h3>
+
 <h5>Production</h5>
-<InputNumber @bind-Value="settings.Production"></InputNumber>
+<InputNumber @bind-Value="Production" @oninput="ChangeProduction"></InputNumber>
 <br /><br />
 <h5>Short Pause</h5>
-<InputNumber @bind-Value="settings.ShortPause"></InputNumber>
+<InputNumber @bind-Value="ShortPause" @oninput="ChangeShortPause"></InputNumber>
 <br /><br />
 <h5>Long Pause</h5>
-<InputNumber @bind-Value="settings.LongPause"></InputNumber>
+<InputNumber @bind-Value="LongPause" @oninput="ChangeLongPause"></InputNumber>
+
+@code{
+    private int Production;
+
+    private int ShortPause;
+
+    private int LongPause;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Production = Preferences.Get("Production", 25);
+        ShortPause = Preferences.Get("ShortPause", 5);
+        LongPause = Preferences.Get("LongPause", 10);
+    }
+    private void ChangeProduction(ChangeEventArgs e)
+    {
+        Production = Convert.ToInt32(e.Value);
+        Preferences.Set("Production", Production);
+    }
+    private void ChangeShortPause(ChangeEventArgs e)
+    {
+        ShortPause = Convert.ToInt32(e.Value);
+        Preferences.Set("ShortPause", ShortPause);
+    }
+    private void ChangeLongPause(ChangeEventArgs e)
+    {
+        LongPause = Convert.ToInt32(e.Value);
+        Preferences.Set("LongPause", LongPause);
+    }
+}
+
 
