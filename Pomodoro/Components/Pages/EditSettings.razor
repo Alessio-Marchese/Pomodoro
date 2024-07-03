@@ -35,13 +35,13 @@
 @code{
     private bool IsChanging = false;
 
-    private PomodoroTimer? changingValue;
+    private PomodoroSettings? changingValue;
 
-    private PomodoroTimer Production = new ("Production",Preferences.Get("Production", 25));
+    private PomodoroSettings Production = new ("Production",Preferences.Get("Production", 25));
 
-    private PomodoroTimer ShortPause = new ("ShortPause", Preferences.Get("ShortPause", 5));
+    private PomodoroSettings ShortPause = new ("ShortPause", Preferences.Get("ShortPause", 5));
 
-    private PomodoroTimer LongPause = new ("LongPause", Preferences.Get("LongPause", 10));
+    private PomodoroSettings LongPause = new ("LongPause", Preferences.Get("LongPause", 10));
 
     private void SaveChangedValue(int newValue)
     {
@@ -62,7 +62,7 @@
         }
         IsChanging = false;
     }
-    private void SetChangingValue(PomodoroTimer pomodoroTimer)
+    private void SetChangingValue(PomodoroSettings pomodoroTimer)
     {
         changingValue = pomodoroTimer;
         IsChanging = true;

@@ -1,75 +1,23 @@
 ﻿@page "/"
 @using System.Timers
+@using Pomodoro.Entities
 
-<h1>@formattedTime</h1>
-<button class="btn btn-warning" @onclick="Break">BREAK</button>
-<button class="btn btn-primary" @onclick="Start">START</button>
-<button class="btn btn-secondary" @onclick="SetProduction">PRODUCTION</button>
-<button class="btn btn-secondary" @onclick="SetShortPause">SHORT PAUSE</button>
-<button class="btn btn-secondary" @onclick="SetLongPause">LONG PAUSE</button>
+<h1>@pomodoroTimer.FormattedTime</h1>
+<button class="btn btn-warning" @onclick="@pomodoroTimer.Break">BREAK</button>
+<button class="btn btn-primary" @onclick="@pomodoroTimer.Start">START</button>
+<button class="btn btn-secondary" @onclick="@pomodoroTimer.SetProduction">PRODUCTION</button>
+<button class="btn btn-secondary" @onclick="@pomodoroTimer.SetShortPause">SHORT PAUSE</button>
+<button class="btn btn-secondary" @onclick="@pomodoroTimer.SetLongPause">LONG PAUSE</button>
 
 @code {
-    private TimeSpan timeSpan;
-    private string formattedTime = string.Empty;
-    private Timer timer = new(100);
+    private PomodoroTimer pomodoroTimer = new();
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        SetTimer();
-        SetProduction();
+        pomodoroTimer.OnTimeChanged += UpdateUI;
     }
-
-    private void SetTimer()
+    private void UpdateUI()
     {
-        formattedTime = timeSpan.ToString(@"mm\:ss");
-        timer.Elapsed += ReduceMilliseconds;
-        timer.AutoReset = true;
-        timer.Enabled = true;
-    }
-
-    private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
-    {
-        if (timeSpan.TotalMilliseconds == 0)
-        {
-            timer.Stop();
-            return;
-        }
-        timeSpan = timeSpan.Subtract(TimeSpan.FromMilliseconds(100));
-        formattedTime = timeSpan.ToString(@"mm\:ss");
-        InvokeAsync(() => StateHasChanged());
-    }
-
-    private void Break()
-    {
-        timer.Stop();
-    }
-
-    private void Start()
-    {
-        timer.Start();
-    }
-
-    private void SetProduction()
-    {
-        timeSpan = new TimeSpan(0, 0, Preferences.Get("Production", 25), 0, 100);
-        formattedTime = timeSpan.ToString(@"mm\:ss");
-        InvokeAsync(() => StateHasChanged());
-        Break();
-    }
-
-    private void SetShortPause()
-    {
-        timeSpan = new TimeSpan(0, 0, Preferences.Get("ShortPause", 5), 0, 100);
-        formattedTime = timeSpan.ToString(@"mm\:ss");
-        InvokeAsync(() => StateHasChanged());
-        Break();
-    }
-
-    private void SetLongPause()
-    {
-        timeSpan = new TimeSpan(0, 0, Preferences.Get("LongPause", 10), 0, 100);
-        formattedTime = timeSpan.ToString(@"mm\:ss");
-        InvokeAsync(() => StateHasChanged());
-        Break();
+        InvokeAsync(StateHasChanged);
     }
 }
