@@ -1,10 +1,11 @@
 ﻿using System.Timers;
 using Timer = System.Timers.Timer;
 
+
 namespace Pomodoro.Entities;
 
 public class PomodoroTimer
-{
+{   
     public string Name { get; set; } = string.Empty;
     public TimeSpan Time { get; set; }
     public string FormattedTime { get; set; } = string.Empty;
@@ -13,13 +14,23 @@ public class PomodoroTimer
     public event Action OnTimeChanged;
 
     public event Action OnTimerComplete;
+    public bool IsAutopilot { get; set; } = true;
+    public int AutopilotState;
+    public event Action OnStateChange;
     public PomodoroTimer()
     {
         Timer = new(100);
         Timer.Elapsed += ReduceMilliseconds;
         Timer.AutoReset = true;
         Timer.Enabled = false;
-        SetProduction();
+        if(IsAutopilot)
+        {
+            SetAutopilot();
+        }
+        else
+        {
+            SetProduction();
+        }
     }
 
     private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
@@ -32,7 +43,15 @@ public class PomodoroTimer
         }
         if (Time.TotalMilliseconds <= 0)
         {
-            Break();
+            if (IsAutopilot)
+            {
+                SetAutopilot();
+                IncreaseAutopilotState();
+            }
+            else
+            {
+                Break();
+            }
             OnTimerComplete?.Invoke();
             return;
         }  
@@ -51,7 +70,7 @@ public class PomodoroTimer
     public void SetProduction()
     {
         Name = "Production";
-        Time = new TimeSpan(0, 0, Preferences.Get("Production", 25), 0, 100);
+        Time = new TimeSpan(0, 0, 0, Preferences.Get("Production", 25), 100);
         FormattedTime = Time.ToString(@"mm\:ss");
         Break();
     }
@@ -67,8 +86,59 @@ public class PomodoroTimer
     public void SetLongPause()
     {
         Name = "LongPause";
-        Time = new TimeSpan(0, 0, Preferences.Get("LongPause", 10), 0, 100);
+        Time = new TimeSpan(0, 0, 0, Preferences.Get("LongPause", 10), 100);
         FormattedTime = Time.ToString(@"mm\:ss");
         Break();
+    }
+
+    public void SetAutopilot()
+    {
+        AutopilotState = Preferences.Get("AutopilotState", 0);
+        switch (AutopilotState)
+        {
+            case 0:
+                SetProduction();
+                break;
+            case 1:
+                SetShortPause();
+                break;
+            case 2:
+                SetProduction();
+                break;
+            case 3:
+                SetShortPause();
+                break;
+            case 4:
+                SetProduction();
+                break;
+            case 5:
+                SetLongPause();
+                break;
+            default:
+                ResetAutopilotState();
+                break;
+
+
+        }
+        OnStateChange?.Invoke();
+    }
+    private void IncreaseAutopilotState()
+    {
+        if(AutopilotState < 6)
+        {
+            AutopilotState++;
+        }
+        else
+        {
+            AutopilotState = 0;
+        }
+        Preferences.Set("AutopilotState", AutopilotState);
+    }
+
+    public void ResetAutopilotState()
+    {
+        AutopilotState = 0;
+        Preferences.Set("AutopilotState", 0);
+        SetAutopilot();
     }
 }
