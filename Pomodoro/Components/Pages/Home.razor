@@ -2,7 +2,9 @@
 @using System.Timers
 @using Pomodoro.Entities
 @using Pomodoro.Components.Pages.SmallComponents
+@using Pomodoro.Services
 @inject PomodoroTimer pomodoroTimer
+@inject NotifyChangeService notifyChangeService
 
 <h1>@pomodoroTimer.FormattedTime</h1>
 <button class="btn btn-warning" @onclick="@pomodoroTimer.Break">BREAK</button>
@@ -21,8 +23,8 @@
     {
         base.OnInitialized();
         pomodoroTimer.OnTimeChanged += UpdateUI;
-        pomodoroTimer.OnStateChange += UpdateUI;
-
+        pomodoroTimer.OnStateChanged += UpdateUI;
+        notifyChangeService.OnChange += UpdateUI;
     }
     private void UpdateUI()
     {

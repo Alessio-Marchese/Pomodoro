@@ -1,4 +1,5 @@
 ﻿using System.Timers;
+using Pomodoro.Services;
 using Timer = System.Timers.Timer;
 
 
@@ -16,9 +17,11 @@ public class PomodoroTimer
     public event Action OnTimerComplete;
     public bool IsAutopilot { get; set; } = true;
     public int AutopilotState;
-    public event Action OnStateChange;
-    public PomodoroTimer()
+    public event Action OnStateChanged;
+    public NotifyChangeService NotifyChangeService;
+    public PomodoroTimer(NotifyChangeService notifyChangeService)
     {
+        NotifyChangeService = notifyChangeService;
         Timer = new(100);
         Timer.Elapsed += ReduceMilliseconds;
         Timer.AutoReset = true;
@@ -120,7 +123,7 @@ public class PomodoroTimer
 
 
         }
-        OnStateChange?.Invoke();
+        OnStateChanged?.Invoke();
     }
     private void IncreaseAutopilotState()
     {
@@ -140,5 +143,11 @@ public class PomodoroTimer
         AutopilotState = 0;
         Preferences.Set("AutopilotState", 0);
         SetAutopilot();
+    }
+
+    public void EditTime(TimeSpan time)
+    {
+        FormattedTime = time.ToString(@"mm\:ss");
+        NotifyChangeService.NotifyChange();
     }
 }

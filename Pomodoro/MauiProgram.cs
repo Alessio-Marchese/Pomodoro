@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Pomodoro.Entities;
+using Pomodoro.Services;
 
 namespace Pomodoro
 {
@@ -17,6 +18,7 @@ namespace Pomodoro
 
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<PomodoroTimer>();
+            builder.Services.AddSingleton<NotifyChangeService>();
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
