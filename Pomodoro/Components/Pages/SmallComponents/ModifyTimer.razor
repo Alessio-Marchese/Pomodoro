@@ -73,11 +73,17 @@
 
     private void TriggerIncrease()
     {
-        Value++;
+        if (Value + 1 < 100)
+        {
+            Value++;
+        }
     }
 
     private void TriggerDecrease()
     {
-        Value--;
+        if (Value - 1 > 0)
+        {
+            Value--;
+        }
     }
 }

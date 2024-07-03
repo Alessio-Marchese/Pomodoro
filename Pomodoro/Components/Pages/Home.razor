@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using System.Timers
 @using Pomodoro.Entities
+@using Pomodoro.Components.Pages.SmallComponents
 
 <h1>@pomodoroTimer.FormattedTime</h1>
 <button class="btn btn-warning" @onclick="@pomodoroTimer.Break">BREAK</button>
@@ -8,16 +9,30 @@
 <button class="btn btn-secondary" @onclick="@pomodoroTimer.SetProduction">PRODUCTION</button>
 <button class="btn btn-secondary" @onclick="@pomodoroTimer.SetShortPause">SHORT PAUSE</button>
 <button class="btn btn-secondary" @onclick="@pomodoroTimer.SetLongPause">LONG PAUSE</button>
+@if(IsShowing)
+{
+   <TimerComplete OnButtonChecked="HideComplete"></TimerComplete> 
+}
 
 @code {
+    public bool IsShowing;
     private PomodoroTimer pomodoroTimer = new();
     protected override void OnInitialized()
     {
         base.OnInitialized();
         pomodoroTimer.OnTimeChanged += UpdateUI;
+        pomodoroTimer.OnTimerComplete += ShowComplete;
     }
     private void UpdateUI()
     {
         InvokeAsync(StateHasChanged);
+    }
+    private void ShowComplete()
+    {
+        IsShowing = true;
+    }
+    private void HideComplete()
+    {
+        IsShowing = false;
     }
 }
