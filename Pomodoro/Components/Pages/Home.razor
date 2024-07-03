@@ -4,7 +4,7 @@
 @using Pomodoro.Components.Pages.SmallComponents
 @using Pomodoro.Services
 @inject PomodoroTimer pomodoroTimer
-@inject NotifyChangeService notifyChangeService
+@inject RefreshHomePage refreshHomePage
 
 <h1>@pomodoroTimer.FormattedTime</h1>
 <button class="btn btn-warning" @onclick="@pomodoroTimer.Break">BREAK</button>
@@ -22,12 +22,6 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        pomodoroTimer.OnTimeChanged += UpdateUI;
-        pomodoroTimer.OnStateChanged += UpdateUI;
-        notifyChangeService.OnChange += UpdateUI;
-    }
-    private void UpdateUI()
-    {
-        InvokeAsync(StateHasChanged);
+        refreshHomePage.OnChange += () => InvokeAsync(StateHasChanged);
     }
 }

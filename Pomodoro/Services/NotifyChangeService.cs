@@ -1,7 +1,7 @@
 ﻿namespace Pomodoro.Services;
 
-public class NotifyChangeService
+public class RefreshHomePage
 {
     public event Action OnChange;
-    public void NotifyChange() => OnChange?.Invoke();
+    public void Refresh() => OnChange?.Invoke();
 }

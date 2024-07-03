@@ -18,7 +18,7 @@ namespace Pomodoro
 
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<PomodoroTimer>();
-            builder.Services.AddSingleton<NotifyChangeService>();
+            builder.Services.AddSingleton<RefreshHomePage>();
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();

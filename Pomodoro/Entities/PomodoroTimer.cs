@@ -11,17 +11,15 @@ public class PomodoroTimer
     public TimeSpan Time { get; set; }
     public string FormattedTime { get; set; } = string.Empty;
     public Timer Timer { get; set; }
-
-    public event Action OnTimeChanged;
-
     public event Action OnTimerComplete;
     public bool IsAutopilot { get; set; } = true;
+
     public int AutopilotState;
-    public event Action OnStateChanged;
-    public NotifyChangeService NotifyChangeService;
-    public PomodoroTimer(NotifyChangeService notifyChangeService)
+
+    public RefreshHomePage RefreshHomePage;
+    public PomodoroTimer(RefreshHomePage refreshHomePage)
     {
-        NotifyChangeService = notifyChangeService;
+        RefreshHomePage = refreshHomePage;
         Timer = new(100);
         Timer.Elapsed += ReduceMilliseconds;
         Timer.AutoReset = true;
@@ -42,7 +40,7 @@ public class PomodoroTimer
         {
             Time = Time.Subtract(TimeSpan.FromMilliseconds(100));
             FormattedTime = Time.ToString(@"mm\:ss");
-            OnTimeChanged?.Invoke();
+            RefreshHomePage.Refresh();
         }
         if (Time.TotalMilliseconds <= 0)
         {
@@ -123,7 +121,7 @@ public class PomodoroTimer
 
 
         }
-        OnStateChanged?.Invoke();
+        RefreshHomePage.Refresh();
     }
     private void IncreaseAutopilotState()
     {
@@ -148,6 +146,6 @@ public class PomodoroTimer
     public void EditTime(TimeSpan time)
     {
         FormattedTime = time.ToString(@"mm\:ss");
-        NotifyChangeService.NotifyChange();
+        RefreshHomePage.Refresh();
     }
 }
