@@ -19,6 +19,7 @@ public class PomodoroTimer
         Timer.Elapsed += ReduceMilliseconds;
         Timer.AutoReset = true;
         Timer.Enabled = false;
+        SetProduction();
     }
 
     private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
