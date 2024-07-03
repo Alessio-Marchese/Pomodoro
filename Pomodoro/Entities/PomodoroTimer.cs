@@ -12,7 +12,7 @@ public class PomodoroTimer
     public string FormattedTime { get; set; } = string.Empty;
     public Timer Timer { get; set; }
     public event Action OnTimerComplete;
-    public bool IsAutopilot { get; set; } = true;
+    public bool IsAutopilot { get; set; }
 
     public int AutopilotState;
 
@@ -51,7 +51,19 @@ public class PomodoroTimer
             }
             else
             {
-                Break();
+                switch(Name.ToUpper())
+                {
+                    case "PRODUCTION":
+                        SetProduction();
+                        break;
+                    case "SHORTPAUSE":
+                        SetShortPause();
+                        break;
+                    case "LONGPAUSE":
+                        SetLongPause();
+                        break;
+                }
+                RefreshHomePage.Refresh();
             }
             OnTimerComplete?.Invoke();
             return;
