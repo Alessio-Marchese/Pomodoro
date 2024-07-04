@@ -1,4 +1,5 @@
 ﻿using System.Timers;
+using Microsoft.AspNetCore.Components;
 using Pomodoro.Services;
 using Timer = System.Timers.Timer;
 
@@ -17,14 +18,16 @@ public class PomodoroTimer
     public int AutopilotState;
 
     public RefreshHomePage RefreshHomePage;
-    public PomodoroTimer(RefreshHomePage refreshHomePage)
+    private MyNotificationService MyNotificationService;
+    public PomodoroTimer(RefreshHomePage refreshHomePage, MyNotificationService myNotificationService)
     {
+        MyNotificationService = myNotificationService;
         RefreshHomePage = refreshHomePage;
         Timer = new(100);
         Timer.Elapsed += ReduceMilliseconds;
         Timer.AutoReset = true;
         Timer.Enabled = false;
-        if(IsAutopilot)
+        if (IsAutopilot)
         {
             SetAutopilot();
         }
@@ -65,6 +68,7 @@ public class PomodoroTimer
                 }
                 RefreshHomePage.Refresh();
             }
+            MyNotificationService.NotifyTimerDone();
             OnTimerComplete?.Invoke();
             return;
         }  
@@ -157,6 +161,7 @@ public class PomodoroTimer
 
     public void EditTime(TimeSpan time)
     {
+        Time = time;
         FormattedTime = time.ToString(@"mm\:ss");
         RefreshHomePage.Refresh();
     }

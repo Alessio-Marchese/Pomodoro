@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Plugin.LocalNotification;
 using Pomodoro.Entities;
 using Pomodoro.Services;
 
@@ -11,6 +12,7 @@ namespace Pomodoro
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseLocalNotification()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -19,6 +21,7 @@ namespace Pomodoro
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<PomodoroTimer>();
             builder.Services.AddSingleton<RefreshHomePage>();
+            builder.Services.AddSingleton<MyNotificationService>();
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
