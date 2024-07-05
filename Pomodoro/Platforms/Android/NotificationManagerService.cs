@@ -93,7 +93,8 @@ public class NotificationManagerService : INotificationManagerService
             .SetContentTitle(title)
             .SetContentText(message)
             .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.dotnet_bot))
-            .SetSmallIcon(Resource.Drawable.notification_action_background);
+            .SetSmallIcon(Resource.Drawable.notification_action_background)
+            .SetAutoCancel(true);
             if (Build.VERSION.SdkInt < BuildVersionCodes.O)
             {
             builder
