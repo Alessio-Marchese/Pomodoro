@@ -94,7 +94,11 @@ public class NotificationManagerService : INotificationManagerService
             .SetContentText(message)
             .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.dotnet_bot))
             .SetSmallIcon(Resource.Drawable.notification_action_background);
-
+            if (Build.VERSION.SdkInt < BuildVersionCodes.O)
+            {
+            builder
+            .SetVibrate(new long[] { 0, 250, 250, 250 });
+            }
         Notification notification = builder.Build();
         compatManager.Notify(messageId++, notification);
     }
@@ -109,6 +113,8 @@ public class NotificationManagerService : INotificationManagerService
             {
                 Description = channelDescription
             };
+            channel.EnableVibration(true);
+            channel.SetVibrationPattern(new long[] { 0, 250, 250, 250 });
             // Register the channel
             NotificationManager manager = (NotificationManager)Platform.AppContext.GetSystemService(Context.NotificationService);
             manager.CreateNotificationChannel(channel);
