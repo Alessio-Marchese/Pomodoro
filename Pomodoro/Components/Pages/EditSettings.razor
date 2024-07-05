@@ -39,11 +39,11 @@
 
     private PomodoroSettings? changingValue;
 
-    private PomodoroSettings Production = new ("Production",Preferences.Get("Production", 25));
+    private PomodoroSettings Production = new ("Production",Preferences.Get("Production", PomodoroTimer.ProductionLength));
 
-    private PomodoroSettings ShortPause = new ("ShortPause", Preferences.Get("ShortPause", 5));
+    private PomodoroSettings ShortPause = new ("ShortPause", Preferences.Get("ShortPause", PomodoroTimer.ShortPauseLength));
 
-    private PomodoroSettings LongPause = new ("LongPause", Preferences.Get("LongPause", 10));
+    private PomodoroSettings LongPause = new ("LongPause", Preferences.Get("LongPause", PomodoroTimer.LongPauseLength));
 
     private void SaveChangedValue(int newValue)
     {
@@ -64,7 +64,7 @@
         }
         if(pomodoroTimer.Name.ToUpper().Equals(changingValue.Name.ToUpper()))
         {
-            pomodoroTimer.EditTime(new TimeSpan(0, 0, 0, newValue, 100));
+            pomodoroTimer.EditTime(new TimeSpan(0, 0, 0, newValue, PomodoroTimer.DelayLength));
         }
         IsChanging = false;
     }

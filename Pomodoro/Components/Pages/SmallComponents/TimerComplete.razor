@@ -1,4 +1,5 @@
 ﻿@using Pomodoro.Entities
+@using Pomodoro.Services
 @inject PomodoroTimer pomodoroTimer
 
 @if(IsShowing)
@@ -46,12 +47,12 @@
 </style>
 
 @code {
-    public bool IsShowing;
+    private bool IsShowing;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        pomodoroTimer.OnTimerComplete += () =>
+        NotifyChange.OnTimerComplete += () =>
         {
             IsShowing = true;
             InvokeAsync(StateHasChanged);

@@ -7,22 +7,27 @@ namespace Pomodoro.Entities;
 
 public class PomodoroTimer
 {
-    INotificationManagerService NotificationManager;
     public string Name { get; set; } = string.Empty;
-    public TimeSpan Time { get; set; }
+    private TimeSpan Time { get; set; }
     public string FormattedTime { get; set; } = string.Empty;
-    public Timer Timer { get; set; }
-    public event Action OnTimerComplete;
+    private Timer Timer { get; set; }
     public bool IsAutopilot { get; set; }
 
     public int AutopilotState;
 
-    public RefreshHomePage RefreshHomePage;
-    public PomodoroTimer(RefreshHomePage refreshHomePage, INotificationManagerService notificationManager)
+    //Services
+    private static INotificationManagerService NotificationManager;
+    //Constants
+    private const int TimerLength = 100;
+    public const int ProductionLength = 25;
+    public const int ShortPauseLength = 5;
+    public const int LongPauseLength = 10;
+    public const int DelayLength = 100;
+    public PomodoroTimer(INotificationManagerService notificationManager)
     {
         NotificationManager = notificationManager;
-        RefreshHomePage = refreshHomePage;
-        Timer = new(100);
+        AutopilotState = Preferences.Get("AutopilotState", 0);
+        Timer = new(TimerLength);
         Timer.Elapsed += ReduceMilliseconds;
         Timer.AutoReset = true;
         Timer.Enabled = false;
@@ -35,21 +40,28 @@ public class PomodoroTimer
             SetProduction();
         }
     }
-
     private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
     {
         if (Time.TotalMilliseconds > 0)
         {
             Time = Time.Subtract(TimeSpan.FromMilliseconds(100));
             FormattedTime = Time.ToString(@"mm\:ss");
-            RefreshHomePage.Refresh();
+            NotifyChange.HomeRefresh();
         }
         if (Time.TotalMilliseconds <= 0)
         {
             if (IsAutopilot)
             {
-                SetAutopilot();
-                IncreaseAutopilotState();
+                if (AutopilotState < 5)
+                {
+                    AutopilotState++;
+                    SetAutopilot();
+                }
+                else
+                {
+                    AutopilotState = 0;
+                }
+                Preferences.Set("AutopilotState", AutopilotState);
             }
             else
             {
@@ -65,52 +77,44 @@ public class PomodoroTimer
                         SetLongPause();
                         break;
                 }
-                RefreshHomePage.Refresh();
+                NotifyChange.HomeRefresh();
             }
-
             NotificationManager.SendNotification("Timer Completato", "Torna nell'app per continuare");
-            OnTimerComplete?.Invoke();
+            NotifyChange.TimerCompleted();
             return;
         }  
     }
-
     public void Break()
     {
         Timer.Stop();
     }
-
     public void Start()
     {
         Timer.Start();
     }
-
     public void SetProduction()
     {
         Name = "Production";
-        Time = new TimeSpan(0, 0, 0, Preferences.Get("Production", 25), 100);
+        Time = new TimeSpan(0, 0, 0, Preferences.Get("Production", ProductionLength), DelayLength);
         FormattedTime = Time.ToString(@"mm\:ss");
         Break();
     }
-
     public void SetShortPause()
     {
         Name = "ShortPause";
-        Time = new TimeSpan(0, 0, 0, Preferences.Get("ShortPause", 5), 100);
+        Time = new TimeSpan(0, 0, 0, Preferences.Get("ShortPause", ShortPauseLength), DelayLength);
         FormattedTime = Time.ToString(@"mm\:ss");
         Break();
     }
-
     public void SetLongPause()
     {
         Name = "LongPause";
-        Time = new TimeSpan(0, 0, 0, Preferences.Get("LongPause", 10), 100);
+        Time = new TimeSpan(0, 0, 0, Preferences.Get("LongPause", LongPauseLength), DelayLength);
         FormattedTime = Time.ToString(@"mm\:ss");
         Break();
     }
-
     public void SetAutopilot()
     {
-        AutopilotState = Preferences.Get("AutopilotState", 0);
         switch (AutopilotState)
         {
             case 0:
@@ -137,32 +141,18 @@ public class PomodoroTimer
 
 
         }
-        RefreshHomePage.Refresh();
+        NotifyChange.HomeRefresh();
     }
-    private void IncreaseAutopilotState()
-    {
-        if(AutopilotState < 6)
-        {
-            AutopilotState++;
-        }
-        else
-        {
-            AutopilotState = 0;
-        }
-        Preferences.Set("AutopilotState", AutopilotState);
-    }
-
     public void ResetAutopilotState()
     {
         AutopilotState = 0;
         Preferences.Set("AutopilotState", 0);
         SetAutopilot();
     }
-
     public void EditTime(TimeSpan time)
     {
         Time = time;
         FormattedTime = time.ToString(@"mm\:ss");
-        RefreshHomePage.Refresh();
+        NotifyChange.HomeRefresh();
     }
 }
