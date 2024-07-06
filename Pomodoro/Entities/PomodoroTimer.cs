@@ -43,7 +43,7 @@ public class PomodoroTimer
     }
     private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
     {
-        NotificationManager.SendNotification("Timer", "Il timer è iniziato", null, this);
+        NotificationManager.SendNotification("Timer", this.FormattedTime, null, this);
         if (ElapsedMilliseconds < Time.TotalMilliseconds)
         {
             ElapsedMilliseconds += TimerLength;

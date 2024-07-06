@@ -94,7 +94,6 @@ public class NotificationManagerService : INotificationManagerService
 
     public void Show(string title, string message, PomodoroTimer? pomodoroTimer = null)
     {
-        Ringtone r = RingtoneManager.GetRingtone(Platform.AppContext, RingtoneManager.GetDefaultUri(RingtoneType.Notification));
         Intent intent = new Intent(Platform.AppContext, typeof(MainActivity));
         intent.PutExtra(TitleKey, title);
         intent.PutExtra(MessageKey, message);
@@ -106,7 +105,6 @@ public class NotificationManagerService : INotificationManagerService
 
         PendingIntent pendingIntent = PendingIntent.GetActivity(Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext)
-            .SetVisibility(NotificationCompat.VisibilityPublic)
             .SetChannelId(secondChannelId)
             .SetContentIntent(pendingIntent)
             .SetContentTitle(title)
@@ -127,12 +125,13 @@ public class NotificationManagerService : INotificationManagerService
                 }
                 else
                 {
-                    builder
+                builder
                     .SetChannelId(channelId)
                     .SetAutoCancel(true)
                     .SetContentText("Timer completato!")
                     .SetProgress(0, 0, false);
-                r.Play();
+                Ringtone? r = RingtoneManager.GetRingtone(Platform.AppContext, RingtoneManager.GetDefaultUri(RingtoneType.Notification));
+                r?.Play();
                 if (Build.VERSION.SdkInt < BuildVersionCodes.O)
                 {
                     builder
@@ -147,7 +146,8 @@ public class NotificationManagerService : INotificationManagerService
             builder
                 .SetChannelId(channelId)
                 .SetAutoCancel(true);
-            r.Play();
+            Ringtone? r = RingtoneManager.GetRingtone(Platform.AppContext, RingtoneManager.GetDefaultUri(RingtoneType.Notification));
+            r?.Play();
             if (Build.VERSION.SdkInt < BuildVersionCodes.O)
             {
                 builder
