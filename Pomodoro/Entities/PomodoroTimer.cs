@@ -23,7 +23,7 @@ public class PomodoroTimer
     public const int ProductionLength = 25;
     public const int ShortPauseLength = 5;
     public const int LongPauseLength = 10;
-    public const int DelayLength = 100;
+    public const int DelayLength = 0;
     public PomodoroTimer(INotificationManagerService notificationManager)
     {
         NotificationManager = notificationManager;

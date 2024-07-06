@@ -120,13 +120,16 @@ public class NotificationManagerService : INotificationManagerService
             int PROGRESS_MAX = (int)pomodoroTimer.Time.TotalMilliseconds;
                 if(pomodoroTimer.ElapsedMilliseconds < PROGRESS_MAX)
                 {
-                    builder.SetProgress(PROGRESS_MAX, (int)pomodoroTimer.ElapsedMilliseconds, false);
+                builder
+                .SetProgress(PROGRESS_MAX, (int)pomodoroTimer.ElapsedMilliseconds, false)
+                .SetOngoing(true);
                     compatManager.Notify(messageId, builder.Build());
                 }
                 else
                 {
                 builder
                     .SetChannelId(channelId)
+                    .SetOngoing(false)
                     .SetAutoCancel(true)
                     .SetContentText("Timer completato!")
                     .SetProgress(0, 0, false);
