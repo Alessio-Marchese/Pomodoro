@@ -17,7 +17,10 @@ namespace Pomodoro
                 });
 
             builder.Services.AddMauiBlazorWebView();
-            builder.Services.AddSingleton<PomodoroTimer>();
+            builder.Services.AddSingleton<PomodoroTimer>(sp =>
+            {
+                return PomodoroTimer.GetInstance(sp.GetRequiredService<INotificationManagerService>());
+            });
 #if ANDROID
             builder.Services.AddTransient<INotificationManagerService, Pomodoro.Platforms.Android.NotificationManagerService>();  
 #endif

@@ -120,10 +120,25 @@ public class NotificationManagerService : INotificationManagerService
             int PROGRESS_MAX = (int)pomodoroTimer.Time.TotalMilliseconds;
                 if(pomodoroTimer.ElapsedMilliseconds < PROGRESS_MAX)
                 {
+
                 builder
                 .SetProgress(PROGRESS_MAX, (int)pomodoroTimer.ElapsedMilliseconds, false)
                 .SetOngoing(true);
-                    compatManager.Notify(messageId, builder.Build());
+                    if(pomodoroTimer.IsActive)
+                    {
+                    Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
+                    actionIntent.SetAction("PAUSE");
+                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, 0, actionIntent, pendingIntentFlags);
+                    builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Pause", actionPendingIntent);
+                    }
+                    else
+                    {
+                    Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
+                    actionIntent.SetAction("RESUME");
+                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, 0, actionIntent, pendingIntentFlags);
+                    builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Resume", actionPendingIntent);
+                }
+                compatManager.Notify(messageId, builder.Build());
                 }
                 else
                 {

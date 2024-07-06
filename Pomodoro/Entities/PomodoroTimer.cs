@@ -14,18 +14,21 @@ public class PomodoroTimer
     public bool IsAutopilot { get; set; }
     public int ElapsedMilliseconds { get; set; }
 
+    public bool IsActive = false;
     public int AutopilotState;
 
     //Services
     private static INotificationManagerService NotificationManager;
+    public static PomodoroTimer Instance;
     //Constants
     private const int TimerLength = 1000;
     public const int ProductionLength = 25;
     public const int ShortPauseLength = 5;
     public const int LongPauseLength = 10;
     public const int DelayLength = 0;
-    public PomodoroTimer(INotificationManagerService notificationManager)
+    private PomodoroTimer(INotificationManagerService notificationManager)
     {
+        Instance = this;
         NotificationManager = notificationManager;
         AutopilotState = Preferences.Get("AutopilotState", 0);
         Timer = new(TimerLength);
@@ -60,10 +63,13 @@ public class PomodoroTimer
     public void Break()
     {
         Timer.Stop();
+        IsActive = false;
+        NotificationManager.SendNotification("Timer", this.FormattedTime, null, this);
     }
     public void Start()
     {
         Timer.Start();
+        IsActive = true;
     }
     public void SetProduction()
     {
@@ -170,6 +176,17 @@ public class PomodoroTimer
                     break;
             }
             NotifyChange.HomeRefresh();
+        }
+    }
+    public static PomodoroTimer GetInstance(INotificationManagerService notificationManagerService)
+    {
+        if(Instance is null)
+        {
+            return new PomodoroTimer(notificationManagerService);
+        }
+        else
+        {
+            return Instance;
         }
     }
 }
