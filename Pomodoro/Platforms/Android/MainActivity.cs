@@ -3,6 +3,8 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Content;
 using Pomodoro.Platforms.Android;
+using AndroidX.Core.App;
+using AndroidX.Core.Content;
 
 namespace Pomodoro
 {

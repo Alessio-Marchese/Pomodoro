@@ -46,30 +46,31 @@ public class PomodoroTimer
     }
     private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
     {
-        NotificationManager.SendNotification("Timer", this.FormattedTime, null, this);
-        if (ElapsedMilliseconds < Time.TotalMilliseconds)
-        {
-            ElapsedMilliseconds += TimerLength;
-            FormattedTime = GetCurrentTime();
-            NotifyChange.HomeRefresh();
-        }
-        else
-        {
-            ElapsedMilliseconds = 0;
-            NotifyChange.TimerCompleted();
-            return;
-        }  
+            NotificationManager.SendNotification("Timer", this.FormattedTime, null, this);
+            if (ElapsedMilliseconds < Time.TotalMilliseconds)
+            {
+                ElapsedMilliseconds += TimerLength;
+                FormattedTime = GetCurrentTime();
+                NotifyChange.HomeRefresh();
+            }
+            else
+            {
+                ElapsedMilliseconds = 0;
+                NotifyChange.TimerCompleted();
+                return;
+            }
     }
     public void Break()
     {
         Timer.Stop();
         IsActive = false;
-        NotificationManager.SendNotification("Timer", this.FormattedTime, null, this);
+        NotificationManager.RefreshCurrentNotification("Timer", FormattedTime, this);
     }
     public void Start()
     {
         Timer.Start();
         IsActive = true;
+        NotificationManager.RefreshCurrentNotification("Timer", FormattedTime, this);
     }
     public void SetProduction()
     {
