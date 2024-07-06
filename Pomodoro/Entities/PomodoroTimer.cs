@@ -8,17 +8,18 @@ namespace Pomodoro.Entities;
 public class PomodoroTimer
 {
     public string Name { get; set; } = string.Empty;
-    private TimeSpan Time { get; set; }
+    public TimeSpan Time { get; set; }
     public string FormattedTime { get; set; } = string.Empty;
     private Timer Timer { get; set; }
     public bool IsAutopilot { get; set; }
+    public int ElapsedMilliseconds { get; set; }
 
     public int AutopilotState;
 
     //Services
     private static INotificationManagerService NotificationManager;
     //Constants
-    private const int TimerLength = 100;
+    private const int TimerLength = 1000;
     public const int ProductionLength = 25;
     public const int ShortPauseLength = 5;
     public const int LongPauseLength = 10;
@@ -42,44 +43,16 @@ public class PomodoroTimer
     }
     private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
     {
-        if (Time.TotalMilliseconds > 0)
+        NotificationManager.SendNotification("Timer", "Il timer è iniziato", null, this);
+        if (ElapsedMilliseconds < Time.TotalMilliseconds)
         {
-            Time = Time.Subtract(TimeSpan.FromMilliseconds(100));
-            FormattedTime = Time.ToString(@"mm\:ss");
+            ElapsedMilliseconds += TimerLength;
+            FormattedTime = GetCurrentTime();
             NotifyChange.HomeRefresh();
         }
-        if (Time.TotalMilliseconds <= 0)
+        else
         {
-            if (IsAutopilot)
-            {
-                if (AutopilotState < 5)
-                {
-                    AutopilotState++;
-                    SetAutopilot();
-                }
-                else
-                {
-                    AutopilotState = 0;
-                }
-                Preferences.Set("AutopilotState", AutopilotState);
-            }
-            else
-            {
-                switch(Name.ToUpper())
-                {
-                    case "PRODUCTION":
-                        SetProduction();
-                        break;
-                    case "SHORTPAUSE":
-                        SetShortPause();
-                        break;
-                    case "LONGPAUSE":
-                        SetLongPause();
-                        break;
-                }
-                NotifyChange.HomeRefresh();
-            }
-            NotificationManager.SendNotification("Timer Completato", "Torna nell'app per continuare");
+            ElapsedMilliseconds = 0;
             NotifyChange.TimerCompleted();
             return;
         }  
@@ -94,13 +67,17 @@ public class PomodoroTimer
     }
     public void SetProduction()
     {
+        NotificationManager.DeleteCurrentNotification();
         Name = "Production";
+        ElapsedMilliseconds = 0;
         Time = new TimeSpan(0, 0, 0, Preferences.Get("Production", ProductionLength), DelayLength);
         FormattedTime = Time.ToString(@"mm\:ss");
         Break();
     }
     public void SetShortPause()
     {
+        NotificationManager.DeleteCurrentNotification();
+        ElapsedMilliseconds = 0;
         Name = "ShortPause";
         Time = new TimeSpan(0, 0, 0, Preferences.Get("ShortPause", ShortPauseLength), DelayLength);
         FormattedTime = Time.ToString(@"mm\:ss");
@@ -108,6 +85,8 @@ public class PomodoroTimer
     }
     public void SetLongPause()
     {
+        NotificationManager.DeleteCurrentNotification();
+        ElapsedMilliseconds = 0;
         Name = "LongPause";
         Time = new TimeSpan(0, 0, 0, Preferences.Get("LongPause", LongPauseLength), DelayLength);
         FormattedTime = Time.ToString(@"mm\:ss");
@@ -154,5 +133,43 @@ public class PomodoroTimer
         Time = time;
         FormattedTime = time.ToString(@"mm\:ss");
         NotifyChange.HomeRefresh();
+    }
+
+    public string GetCurrentTime()
+    {
+        return Time.Subtract(TimeSpan.FromMilliseconds(ElapsedMilliseconds)).ToString(@"mm\:ss"); 
+    }
+
+    public void RestoreTimer()
+    {
+        if (IsAutopilot)
+        {
+            if (AutopilotState < 5)
+            {
+                AutopilotState++;
+                SetAutopilot();
+            }
+            else
+            {
+                AutopilotState = 0;
+            }
+            Preferences.Set("AutopilotState", AutopilotState);
+        }
+        else
+        {
+            switch (Name.ToUpper())
+            {
+                case "PRODUCTION":
+                    SetProduction();
+                    break;
+                case "SHORTPAUSE":
+                    SetShortPause();
+                    break;
+                case "LONGPAUSE":
+                    SetLongPause();
+                    break;
+            }
+            NotifyChange.HomeRefresh();
+        }
     }
 }

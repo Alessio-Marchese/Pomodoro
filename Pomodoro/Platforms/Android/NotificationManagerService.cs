@@ -2,22 +2,27 @@
 using Android.Content;
 using Android.Graphics;
 using Android.Media;
-using Android.Net;
 using Android.OS;
 using AndroidX.Core.App;
+using Pomodoro.Entities;
 
 namespace Pomodoro.Platforms.Android;
 
 public class NotificationManagerService : INotificationManagerService
 {
-    const string channelId = "default";
-    const string channelName = "Default";
-    const string channelDescription = "The default channel for notifications.";
+    const string channelId = "Notifications";
+    const string channelName = "Notifications";
+    const string channelDescription = "The default channel for notifications";
+
+    const string secondChannelId = "Progress";
+    const string secondChannelName = "Progress";
+    const string secondChannelDescription = "The default channel for progression";
 
     public const string TitleKey = "title";
     public const string MessageKey = "message";
 
     bool channelInitialized = false;
+    bool secondChannelInitialized = false;
     int messageId = 0;
     int pendingIntentId = 0;
 
@@ -37,11 +42,15 @@ public class NotificationManagerService : INotificationManagerService
         }
     }
 
-    public void SendNotification(string title, string message, DateTime? notifyTime = null)
+    public void SendNotification(string title, string message, DateTime? notifyTime = null, PomodoroTimer? pomodoroTimer = null)
     {
         if (!channelInitialized)
         {
             CreateNotificationChannel();
+        }
+        if (!secondChannelInitialized)
+        {
+            CreateProgressChannel();
         }
 
         if (notifyTime != null)
@@ -62,7 +71,14 @@ public class NotificationManagerService : INotificationManagerService
         }
         else
         {
-            Show(title, message);
+            if(pomodoroTimer != null)
+            {
+                Show(title, message, pomodoroTimer);
+            }
+            else
+            {
+                Show(title, message);
+            }
         }
     }
 
@@ -76,8 +92,9 @@ public class NotificationManagerService : INotificationManagerService
         NotificationReceived?.Invoke(null, args);
     }
 
-    public void Show(string title, string message)
+    public void Show(string title, string message, PomodoroTimer? pomodoroTimer = null)
     {
+        Ringtone r = RingtoneManager.GetRingtone(Platform.AppContext, RingtoneManager.GetDefaultUri(RingtoneType.Notification));
         Intent intent = new Intent(Platform.AppContext, typeof(MainActivity));
         intent.PutExtra(TitleKey, title);
         intent.PutExtra(MessageKey, message);
@@ -88,20 +105,56 @@ public class NotificationManagerService : INotificationManagerService
             : PendingIntentFlags.UpdateCurrent;
 
         PendingIntent pendingIntent = PendingIntent.GetActivity(Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext, channelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext)
+            .SetVisibility(NotificationCompat.VisibilityPublic)
+            .SetChannelId(secondChannelId)
             .SetContentIntent(pendingIntent)
             .SetContentTitle(title)
             .SetContentText(message)
             .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.dotnet_bot))
-            .SetSmallIcon(Resource.Drawable.notification_action_background)
-            .SetAutoCancel(true);
+            .SetSmallIcon(Resource.Drawable.notification_action_background);
+        if (Build.VERSION.SdkInt < BuildVersionCodes.O)
+        {
+            builder.SetSound(null);
+        }
+        if (pomodoroTimer != null)
+        {
+            int PROGRESS_MAX = (int)pomodoroTimer.Time.TotalMilliseconds;
+                if(pomodoroTimer.ElapsedMilliseconds < PROGRESS_MAX)
+                {
+                    builder.SetProgress(PROGRESS_MAX, (int)pomodoroTimer.ElapsedMilliseconds, false);
+                    compatManager.Notify(messageId, builder.Build());
+                }
+                else
+                {
+                    builder
+                    .SetChannelId(channelId)
+                    .SetAutoCancel(true)
+                    .SetContentText("Timer completato!")
+                    .SetProgress(0, 0, false);
+                r.Play();
+                if (Build.VERSION.SdkInt < BuildVersionCodes.O)
+                {
+                    builder
+                    .SetVibrate(new long[] { 0, 250, 250, 250 });
+                }
+                compatManager.Notify(messageId, builder.Build());
+                pomodoroTimer.Break();
+                }
+        }
+        else
+        {
+            builder
+                .SetChannelId(channelId)
+                .SetAutoCancel(true);
+            r.Play();
             if (Build.VERSION.SdkInt < BuildVersionCodes.O)
             {
-            builder
-            .SetVibrate(new long[] { 0, 250, 250, 250 });
+                builder
+                .SetVibrate(new long[] { 0, 250, 250, 250 });
             }
-        Notification notification = builder.Build();
-        compatManager.Notify(messageId++, notification);
+            compatManager.Notify(messageId++, builder.Build());
+        }
     }
 
     void CreateNotificationChannel()
@@ -115,11 +168,29 @@ public class NotificationManagerService : INotificationManagerService
                 Description = channelDescription
             };
             channel.EnableVibration(true);
-            channel.SetVibrationPattern(new long[] { 0, 250, 250, 250 });
             // Register the channel
             NotificationManager manager = (NotificationManager)Platform.AppContext.GetSystemService(Context.NotificationService);
             manager.CreateNotificationChannel(channel);
             channelInitialized = true;
+        }
+    }
+
+    void CreateProgressChannel()
+    {
+        // Create the notification channel, but only on API 26+.
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+        {
+            var channelNameJava = new Java.Lang.String(secondChannelName);
+            var channel = new NotificationChannel(secondChannelId, channelNameJava, NotificationImportance.Default)
+            {
+                Description = secondChannelDescription,
+
+            };
+            channel.SetSound(null, null);
+            // Register the channel
+            NotificationManager manager = (NotificationManager)Platform.AppContext.GetSystemService(Context.NotificationService);
+            manager.CreateNotificationChannel(channel);
+            secondChannelInitialized = true;
         }
     }
 
@@ -129,5 +200,11 @@ public class NotificationManagerService : INotificationManagerService
         double epochDiff = (new DateTime(1970, 1, 1) - DateTime.MinValue).TotalSeconds;
         long utcAlarmTime = utcTime.AddSeconds(-epochDiff).Ticks / 10000;
         return utcAlarmTime; // milliseconds
+    }
+
+    public void DeleteCurrentNotification()
+    {
+        NotificationManager manager = (NotificationManager)Platform.AppContext.GetSystemService(Context.NotificationService);
+        manager.Cancel(messageId);
     }
 }
