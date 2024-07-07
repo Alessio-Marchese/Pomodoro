@@ -46,30 +46,28 @@ public class PomodoroTimer
     }
     private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
     {
-            NotificationManager.SendNotification("Timer", this.FormattedTime,this, null);
-            if (ElapsedMilliseconds < Time.TotalMilliseconds)
-            {
-                ElapsedMilliseconds += TimerLength;
-                FormattedTime = GetCurrentTime();
-                NotifyChange.HomeRefresh();
-            }
-            else
-            {
-                ElapsedMilliseconds = 0;
-                NotifyChange.TimerCompleted();
-                return;
-            }
+        if (ElapsedMilliseconds < Time.TotalMilliseconds)
+        {
+           ElapsedMilliseconds += TimerLength;
+           FormattedTime = GetCurrentTime();
+            NotificationManager.SendNotification("Timer", this.FormattedTime, this, null);
+            NotifyChange.HomeRefresh();
+        }
+        else
+        { 
+            NotifyChange.TimerCompleted();
+        }
     }
     public void Break()
     {
         IsActive = false;
-        NotificationManager.RefreshCurrentNotification("Timer", FormattedTime, this);
+        NotificationManager.SendNotification("Timer", FormattedTime, this);
         Timer.Stop();
     }
     public void Start()
     {
         IsActive = true;
-        NotificationManager.RefreshCurrentNotification("Timer", FormattedTime, this);
+        NotificationManager.SendNotification("Timer", FormattedTime, this);
         Timer.Start();
     }
     public void SetProduction()
@@ -78,8 +76,8 @@ public class PomodoroTimer
         Name = "Production";
         ElapsedMilliseconds = 0;
         Time = new TimeSpan(0, 0, 0, Preferences.Get("Production", ProductionLength), DelayLength);
-        FormattedTime = Time.ToString(@"mm\:ss");
-        Break();
+        FormattedTime = GetCurrentTime();
+        Timer.Stop();
     }
     public void SetShortPause()
     {
@@ -87,8 +85,8 @@ public class PomodoroTimer
         ElapsedMilliseconds = 0;
         Name = "ShortPause";
         Time = new TimeSpan(0, 0, 0, Preferences.Get("ShortPause", ShortPauseLength), DelayLength);
-        FormattedTime = Time.ToString(@"mm\:ss");
-        Break();
+        FormattedTime = GetCurrentTime();
+        Timer.Stop();
     }
     public void SetLongPause()
     {
@@ -96,8 +94,8 @@ public class PomodoroTimer
         ElapsedMilliseconds = 0;
         Name = "LongPause";
         Time = new TimeSpan(0, 0, 0, Preferences.Get("LongPause", LongPauseLength), DelayLength);
-        FormattedTime = Time.ToString(@"mm\:ss");
-        Break();
+        FormattedTime = GetCurrentTime();
+        Timer.Stop();
     }
     public void SetAutopilot()
     {
@@ -138,7 +136,7 @@ public class PomodoroTimer
     public void EditTime(TimeSpan time)
     {
         Time = time;
-        FormattedTime = time.ToString(@"mm\:ss");
+        FormattedTime = GetCurrentTime();
         NotifyChange.HomeRefresh();
     }
 
@@ -164,18 +162,7 @@ public class PomodoroTimer
         }
         else
         {
-            switch (Name.ToUpper())
-            {
-                case "PRODUCTION":
-                    SetProduction();
-                    break;
-                case "SHORTPAUSE":
-                    SetShortPause();
-                    break;
-                case "LONGPAUSE":
-                    SetLongPause();
-                    break;
-            }
+            ResetCurrentTimer();
             NotifyChange.HomeRefresh();
         }
     }
@@ -189,5 +176,12 @@ public class PomodoroTimer
         {
             return Instance;
         }
+    }
+
+    public void ResetCurrentTimer()
+    {
+        ElapsedMilliseconds = 0;
+        FormattedTime = GetCurrentTime();
+        Break();
     }
 }

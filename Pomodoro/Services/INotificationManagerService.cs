@@ -6,5 +6,4 @@ public interface INotificationManagerService
     void SendNotification(string title, string message, PomodoroTimer pomodoroTimer, DateTime? notifyTime = null);
     void ReceiveNotification(string title, string message);
     void DeleteCurrentNotification();
-    void RefreshCurrentNotification(string title, string message, PomodoroTimer pomodoroTimer);
 }

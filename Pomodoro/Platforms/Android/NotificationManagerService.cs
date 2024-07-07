@@ -114,28 +114,45 @@ public class NotificationManagerService : INotificationManagerService
             int PROGRESS_CURRENT = pomodoroTimer.ElapsedMilliseconds;
             if (PROGRESS_CURRENT < PROGRESS_MAX)
             {
-                builder
+            Intent resetIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
+            resetIntent.SetAction("RESET");
+            PendingIntent resetPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, 0, resetIntent, pendingIntentFlags);
+            builder
                 .SetProgress(PROGRESS_MAX, PROGRESS_CURRENT, false)
                 .SetOngoing(true);
                 if (pomodoroTimer.IsActive)
                 {
                     Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
                     actionIntent.SetAction("PAUSE");
-                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, pendingIntentFlags);
+                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, 0, actionIntent, pendingIntentFlags);
                     builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Pause", actionPendingIntent);
                 }
                 else
                 {
                     Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
                     actionIntent.SetAction("RESUME");
-                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, pendingIntentFlags);
-                    builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Resume", actionPendingIntent);
+                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, 0, actionIntent, pendingIntentFlags);
+                    builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, pomodoroTimer.ElapsedMilliseconds == 0 ? "Start" : "Resume", actionPendingIntent);
                 }
-                compatManager.Notify(messageId, builder.Build());
+            builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Reset", resetPendingIntent);
+            compatManager.Notify(messageId, builder.Build());
             }
             else
             {
-                pomodoroTimer.Break();
+                builder
+                    .SetChannelId(channelId)
+                    .SetOngoing(false)
+                    .SetAutoCancel(true)
+                    .SetContentText("Timer completato!")
+                    .SetProgress(0, 0, false);
+                Ringtone? r = RingtoneManager.GetRingtone(Platform.AppContext, RingtoneManager.GetDefaultUri(RingtoneType.Notification));
+                r?.Play();
+                if (Build.VERSION.SdkInt < BuildVersionCodes.O)
+                {
+                    builder
+                    .SetVibrate(new long[] { 0, 250, 250, 250 });
+                }
+                compatManager.Notify(messageId, builder.Build());
             }
         }
 
@@ -188,66 +205,5 @@ public class NotificationManagerService : INotificationManagerService
     {
         NotificationManager manager = (NotificationManager)Platform.AppContext.GetSystemService(Context.NotificationService);
         manager.Cancel(messageId);
-    }
-
-    public void RefreshCurrentNotification(string title, string message, PomodoroTimer pomodoroTimer)
-    {
-       Intent intent = new Intent(Platform.AppContext, typeof(MainActivity));
-        intent.PutExtra(TitleKey, title);
-        intent.PutExtra(MessageKey, message);
-        intent.SetFlags(ActivityFlags.SingleTop | ActivityFlags.ClearTop);
-
-        var pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
-            ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable
-            : PendingIntentFlags.UpdateCurrent;
-
-        PendingIntent pendingIntent = PendingIntent.GetActivity(Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext)
-            .SetChannelId(secondChannelId)
-            .SetContentIntent(pendingIntent)
-            .SetContentTitle(title)
-            .SetContentText(message)
-            .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.dotnet_bot))
-            .SetSmallIcon(Resource.Drawable.notification_action_background);
-        int PROGRESS_MAX = (int)pomodoroTimer.Time.TotalMilliseconds;
-        int PROGRESS_CURRENT = pomodoroTimer.ElapsedMilliseconds;
-        if (PROGRESS_CURRENT < PROGRESS_MAX)
-        {
-            builder
-            .SetProgress(PROGRESS_MAX, PROGRESS_CURRENT, false)
-            .SetOngoing(true);
-            if (pomodoroTimer.IsActive)
-            {
-                Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
-                actionIntent.SetAction("PAUSE");
-                PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, pendingIntentFlags);
-                builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Pause", actionPendingIntent);
-            }
-            else
-            {
-                Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
-                actionIntent.SetAction("RESUME");
-                PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, pendingIntentFlags);
-                builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Resume", actionPendingIntent);
-            }
-            compatManager.Notify(messageId, builder.Build());
-        }
-        else
-        {
-            builder
-                    .SetChannelId(channelId)
-                    .SetOngoing(false)
-                    .SetAutoCancel(true)
-                    .SetContentText("Timer completato!")
-                    .SetProgress(0, 0, false);
-            Ringtone? r = RingtoneManager.GetRingtone(Platform.AppContext, RingtoneManager.GetDefaultUri(RingtoneType.Notification));
-            r?.Play();
-            if (Build.VERSION.SdkInt < BuildVersionCodes.O)
-            {
-                builder
-                .SetVibrate(new long[] { 0, 250, 250, 250 });
-            }
-            compatManager.Notify(messageId, builder.Build());
-        }
     }
 }
