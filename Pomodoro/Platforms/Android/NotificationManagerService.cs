@@ -5,7 +5,6 @@ using Android.Media;
 using Android.OS;
 using AndroidX.Core.App;
 using Pomodoro.Entities;
-using static Android.Icu.Text.CaseMap;
 
 namespace Pomodoro.Platforms.Android;
 
@@ -45,7 +44,7 @@ public class NotificationManagerService : INotificationManagerService
         }
     }
 
-    public void SendNotification(string title, string message, DateTime? notifyTime = null, PomodoroTimer? pomodoroTimer = null)
+    public void SendNotification(string title, string message, PomodoroTimer pomodoroTimer, DateTime? notifyTime = null)
     {
         if (!channelInitialized)
         {
@@ -74,14 +73,7 @@ public class NotificationManagerService : INotificationManagerService
         }
         else
         {
-            if (pomodoroTimer != null)
-            {
-                Show(title, message, pomodoroTimer);
-            }
-            else
-            {
-                Show(title, message);
-            }
+            Show(title, message, pomodoroTimer);
         }
     }
 
@@ -95,7 +87,7 @@ public class NotificationManagerService : INotificationManagerService
         NotificationReceived?.Invoke(null, args);
     }
 
-    public void Show(string title, string message, PomodoroTimer? pomodoroTimer = null)
+    public void Show(string title, string message, PomodoroTimer pomodoroTimer)
     {
         Intent intent = new Intent(Platform.AppContext, typeof(MainActivity));
         intent.PutExtra(TitleKey, title);
@@ -105,7 +97,6 @@ public class NotificationManagerService : INotificationManagerService
         var pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
             ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable
             : PendingIntentFlags.UpdateCurrent;
-        var buttonsPendingIntentFlags = PendingIntentFlags.Immutable;
 
         PendingIntent pendingIntent = PendingIntent.GetActivity(Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext)
@@ -119,27 +110,25 @@ public class NotificationManagerService : INotificationManagerService
         {
             builder.SetSound(null);
         }
-        if (pomodoroTimer != null)
-        {
             int PROGRESS_MAX = (int)pomodoroTimer.Time.TotalMilliseconds;
-            if (pomodoroTimer.ElapsedMilliseconds < PROGRESS_MAX)
+            int PROGRESS_CURRENT = pomodoroTimer.ElapsedMilliseconds;
+            if (PROGRESS_CURRENT < PROGRESS_MAX)
             {
-
                 builder
-                .SetProgress(PROGRESS_MAX, (int)pomodoroTimer.ElapsedMilliseconds, false)
+                .SetProgress(PROGRESS_MAX, PROGRESS_CURRENT, false)
                 .SetOngoing(true);
                 if (pomodoroTimer.IsActive)
                 {
                     Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
                     actionIntent.SetAction("PAUSE");
-                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, buttonsPendingIntentFlags);
+                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, pendingIntentFlags);
                     builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Pause", actionPendingIntent);
                 }
                 else
                 {
                     Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
                     actionIntent.SetAction("RESUME");
-                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, buttonsPendingIntentFlags);
+                    PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, pendingIntentFlags);
                     builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Resume", actionPendingIntent);
                 }
                 compatManager.Notify(messageId, builder.Build());
@@ -149,21 +138,6 @@ public class NotificationManagerService : INotificationManagerService
                 pomodoroTimer.Break();
             }
         }
-        else
-        {
-            builder
-                .SetChannelId(channelId)
-                .SetAutoCancel(true);
-            Ringtone? r = RingtoneManager.GetRingtone(Platform.AppContext, RingtoneManager.GetActualDefaultRingtoneUri(Platform.AppContext, RingtoneType.Notification));
-            r?.Play();
-            if (Build.VERSION.SdkInt < BuildVersionCodes.O)
-            {
-                builder
-                .SetVibrate(new long[] { 0, 250, 250, 250 });
-            }
-            compatManager.Notify(messageId++, builder.Build());
-        }
-    }
 
     void CreateNotificationChannel()
     {
@@ -218,7 +192,7 @@ public class NotificationManagerService : INotificationManagerService
 
     public void RefreshCurrentNotification(string title, string message, PomodoroTimer pomodoroTimer)
     {
-        Intent intent = new Intent(Platform.AppContext, typeof(MainActivity));
+       Intent intent = new Intent(Platform.AppContext, typeof(MainActivity));
         intent.PutExtra(TitleKey, title);
         intent.PutExtra(MessageKey, message);
         intent.SetFlags(ActivityFlags.SingleTop | ActivityFlags.ClearTop);
@@ -226,7 +200,6 @@ public class NotificationManagerService : INotificationManagerService
         var pendingIntentFlags = (Build.VERSION.SdkInt >= BuildVersionCodes.S)
             ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable
             : PendingIntentFlags.UpdateCurrent;
-        var buttonsPendingIntentFlags = PendingIntentFlags.Immutable;
 
         PendingIntent pendingIntent = PendingIntent.GetActivity(Platform.AppContext, pendingIntentId++, intent, pendingIntentFlags);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(Platform.AppContext)
@@ -237,23 +210,24 @@ public class NotificationManagerService : INotificationManagerService
             .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.dotnet_bot))
             .SetSmallIcon(Resource.Drawable.notification_action_background);
         int PROGRESS_MAX = (int)pomodoroTimer.Time.TotalMilliseconds;
-        if (pomodoroTimer.ElapsedMilliseconds < PROGRESS_MAX)
+        int PROGRESS_CURRENT = pomodoroTimer.ElapsedMilliseconds;
+        if (PROGRESS_CURRENT < PROGRESS_MAX)
         {
             builder
-                .SetProgress(PROGRESS_MAX, (int)pomodoroTimer.ElapsedMilliseconds, false)
-                .SetOngoing(true);
+            .SetProgress(PROGRESS_MAX, PROGRESS_CURRENT, false)
+            .SetOngoing(true);
             if (pomodoroTimer.IsActive)
             {
                 Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
                 actionIntent.SetAction("PAUSE");
-                PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, buttonsPendingIntentFlags);
+                PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, pendingIntentFlags);
                 builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Pause", actionPendingIntent);
             }
             else
             {
                 Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
                 actionIntent.SetAction("RESUME");
-                PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, buttonsPendingIntentFlags);
+                PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, actionPendingIntentId++, actionIntent, pendingIntentFlags);
                 builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Resume", actionPendingIntent);
             }
             compatManager.Notify(messageId, builder.Build());
