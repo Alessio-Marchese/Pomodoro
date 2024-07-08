@@ -40,15 +40,15 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
-      <RunAOTCompilation>True</RunAOTCompilation>
-      <PublishTrimmed>True</PublishTrimmed>
+      <RunAOTCompilation>False</RunAOTCompilation>
+      <PublishTrimmed>False</PublishTrimmed>
       <DebugSymbols>False</DebugSymbols>
       <AndroidLinkTool>r8</AndroidLinkTool>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
-      <PublishTrimmed>True</PublishTrimmed>
-      <RunAOTCompilation>True</RunAOTCompilation>
+      <PublishTrimmed>False</PublishTrimmed>
+      <RunAOTCompilation>False</RunAOTCompilation>
     </PropertyGroup>
 
     <ItemGroup>
