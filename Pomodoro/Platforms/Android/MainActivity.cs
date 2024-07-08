@@ -16,6 +16,7 @@ namespace Pomodoro
             base.OnCreate(savedInstanceState);
             NotificationPermission.Check();
             CreateNotificationFromIntent(Intent);
+            this.RequestedOrientation = ScreenOrientation.Portrait;
         }
 
         protected override void OnNewIntent(Intent? intent)
