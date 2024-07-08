@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Pomodoro.Entities;
 
 namespace Pomodoro.Platforms.Android;
 
@@ -14,7 +13,7 @@ namespace Pomodoro.Platforms.Android;
                 string message = intent.GetStringExtra(NotificationManagerService.MessageKey);
 
                 NotificationManagerService manager = NotificationManagerService.Instance ?? new NotificationManagerService();
-                manager.Show(title, message, PomodoroTimer.Instance);
+                manager.Show(title, message);
             }
         }
     }

@@ -1,8 +1,6 @@
 ﻿using System.Timers;
 using Pomodoro.Services;
 using Timer = System.Timers.Timer;
-
-
 namespace Pomodoro.Entities;
 
 public class PomodoroTimer
@@ -28,20 +26,23 @@ public class PomodoroTimer
     public const int DelayLength = 0;
     private PomodoroTimer(INotificationManagerService notificationManager)
     {
-        Instance = this;
-        NotificationManager = notificationManager;
-        AutopilotState = Preferences.Get("AutopilotState", 0);
-        Timer = new(TimerLength);
-        Timer.Elapsed += ReduceMilliseconds;
-        Timer.AutoReset = true;
-        Timer.Enabled = false;
-        if (IsAutopilot)
+        if(Instance == null)
         {
-            SetAutopilot();
-        }
-        else
-        {
-            SetProduction();
+            NotificationManager = notificationManager;
+            AutopilotState = Preferences.Get("AutopilotState", 0);
+            Timer = new(TimerLength);
+            Timer.Elapsed += ReduceMilliseconds;
+            Timer.AutoReset = true;
+            Timer.Enabled = false;
+            if (IsAutopilot)
+            {
+                SetAutopilot();
+            }
+            else
+            {
+                SetProduction();
+            }
+            Instance = this;
         }
     }
     private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
@@ -50,7 +51,7 @@ public class PomodoroTimer
         {
            ElapsedMilliseconds += TimerLength;
            FormattedTime = GetCurrentTime();
-            NotificationManager.SendNotification("Timer", this.FormattedTime, this, null);
+            NotificationManager.SendNotification("Timer", this.FormattedTime);
             NotifyChange.HomeRefresh();
         }
         else
@@ -61,13 +62,13 @@ public class PomodoroTimer
     public void Break()
     {
         IsActive = false;
-        NotificationManager.SendNotification("Timer", FormattedTime, this);
+        NotificationManager.SendNotification("Timer", FormattedTime);
         Timer.Stop();
     }
     public void Start()
     {
         IsActive = true;
-        NotificationManager.SendNotification("Timer", FormattedTime, this);
+        NotificationManager.SendNotification("Timer", FormattedTime);
         Timer.Start();
     }
     public void SetProduction()
@@ -166,22 +167,20 @@ public class PomodoroTimer
             NotifyChange.HomeRefresh();
         }
     }
-    public static PomodoroTimer GetInstance(INotificationManagerService notificationManagerService)
-    {
-        if(Instance is null)
-        {
-            return new PomodoroTimer(notificationManagerService);
-        }
-        else
-        {
-            return Instance;
-        }
-    }
 
     public void ResetCurrentTimer()
     {
         ElapsedMilliseconds = 0;
         FormattedTime = GetCurrentTime();
         Break();
+    }
+
+    public static PomodoroTimer GetInstance(INotificationManagerService notificationManagerService)
+    {
+        if(Instance is null)
+        {
+            Instance = new PomodoroTimer(notificationManagerService);
+        }
+        return Instance;
     }
 }

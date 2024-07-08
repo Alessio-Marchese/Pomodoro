@@ -39,6 +39,18 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+      <RunAOTCompilation>True</RunAOTCompilation>
+      <PublishTrimmed>True</PublishTrimmed>
+      <DebugSymbols>False</DebugSymbols>
+      <AndroidLinkTool>r8</AndroidLinkTool>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
+      <PublishTrimmed>True</PublishTrimmed>
+      <RunAOTCompilation>True</RunAOTCompilation>
+    </PropertyGroup>
+
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />

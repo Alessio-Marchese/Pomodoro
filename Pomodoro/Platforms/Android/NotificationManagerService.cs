@@ -37,6 +37,7 @@ public class NotificationManagerService : INotificationManagerService
     {
         if (Instance == null)
         {
+            
             CreateNotificationChannel();
             CreateProgressChannel();
             compatManager = NotificationManagerCompat.From(Platform.AppContext);
@@ -44,7 +45,7 @@ public class NotificationManagerService : INotificationManagerService
         }
     }
 
-    public void SendNotification(string title, string message, PomodoroTimer pomodoroTimer, DateTime? notifyTime = null)
+    public void SendNotification(string title, string message, DateTime? notifyTime = null)
     {
         if (!channelInitialized)
         {
@@ -73,7 +74,7 @@ public class NotificationManagerService : INotificationManagerService
         }
         else
         {
-            Show(title, message, pomodoroTimer);
+            Show(title, message);
         }
     }
 
@@ -87,8 +88,9 @@ public class NotificationManagerService : INotificationManagerService
         NotificationReceived?.Invoke(null, args);
     }
 
-    public void Show(string title, string message, PomodoroTimer pomodoroTimer)
+    public void Show(string title, string message)
     {
+        PomodoroTimer pomodoroTimer = PomodoroTimer.Instance;
         Intent intent = new Intent(Platform.AppContext, typeof(MainActivity));
         intent.PutExtra(TitleKey, title);
         intent.PutExtra(MessageKey, message);
@@ -135,7 +137,7 @@ public class NotificationManagerService : INotificationManagerService
                     builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, pomodoroTimer.ElapsedMilliseconds == 0 ? "Start" : "Resume", actionPendingIntent);
                 }
             builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Reset", resetPendingIntent);
-            compatManager.Notify(messageId, builder.Build());
+            compatManager?.Notify(messageId, builder.Build());
             }
             else
             {

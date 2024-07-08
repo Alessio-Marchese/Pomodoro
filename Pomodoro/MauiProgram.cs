@@ -15,20 +15,20 @@ namespace Pomodoro
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
-
+           
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<PomodoroTimer>(sp =>
             {
                 return PomodoroTimer.GetInstance(sp.GetRequiredService<INotificationManagerService>());
             });
 #if ANDROID
-            builder.Services.AddTransient<INotificationManagerService, Pomodoro.Platforms.Android.NotificationManagerService>();  
-#endif
-#if DEBUG
-            builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+                builder.Services.AddTransient<INotificationManagerService, Pomodoro.Platforms.Android.NotificationManagerService>();
 #endif
 
+            builder.Services.AddBlazorWebViewDeveloperTools();
+    		builder.Logging.AddDebug();
+
+            
             return builder.Build();
         }
     }
