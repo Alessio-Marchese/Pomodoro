@@ -22,7 +22,7 @@ namespace Pomodoro
                 return PomodoroTimer.GetInstance(sp.GetRequiredService<INotificationManagerService>());
             });
 #if ANDROID
-                builder.Services.AddTransient<INotificationManagerService, Pomodoro.Platforms.Android.NotificationManagerService>();
+                builder.Services.AddSingleton<INotificationManagerService, Pomodoro.Platforms.Android.NotificationManagerService>();
 #endif
 
             builder.Services.AddBlazorWebViewDeveloperTools();
