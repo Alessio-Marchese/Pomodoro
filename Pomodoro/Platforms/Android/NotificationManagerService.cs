@@ -22,7 +22,6 @@ public class NotificationManagerService : INotificationManagerService
     public const string MessageKey = "message";
 
     bool channelInitialized = false;
-    bool secondChannelInitialized = false;
     int messageId = 0;
     int pendingIntentId = 0;
     int actionPendingIntentId = 0;
@@ -39,7 +38,6 @@ public class NotificationManagerService : INotificationManagerService
         {
             
             CreateNotificationChannel();
-            CreateProgressChannel();
             compatManager = NotificationManagerCompat.From(Platform.AppContext);
             Instance = this;
         }
@@ -50,10 +48,6 @@ public class NotificationManagerService : INotificationManagerService
         if (!channelInitialized)
         {
             CreateNotificationChannel();
-        }
-        if (!secondChannelInitialized)
-        {
-            CreateProgressChannel();
         }
 
         if (notifyTime != null)
