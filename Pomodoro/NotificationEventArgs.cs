@@ -1,4 +1,4 @@
-﻿namespace Pomodoro.Platforms.Android;
+﻿namespace Pomodoro;
 
 public class NotificationEventArgs : EventArgs
 {

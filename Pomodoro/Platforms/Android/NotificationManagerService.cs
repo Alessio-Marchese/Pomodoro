@@ -163,35 +163,24 @@ public class NotificationManagerService : INotificationManagerService
         // Create the notification channel, but only on API 26+.
         if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
         {
+            NotificationManager manager = (NotificationManager)Platform.AppContext.GetSystemService(Context.NotificationService);
             var channelNameJava = new Java.Lang.String(channelName);
-            var channel = new NotificationChannel(channelId, channelNameJava, NotificationImportance.Default)
+            var firstChannel = new NotificationChannel(channelId, channelNameJava, NotificationImportance.Default)
             {
                 Description = channelDescription
             };
-            channel.EnableVibration(true);
-            // Register the channel
-            NotificationManager manager = (NotificationManager)Platform.AppContext.GetSystemService(Context.NotificationService);
-            manager.CreateNotificationChannel(channel);
-            channelInitialized = true;
-        }
-    }
-
-    void CreateProgressChannel()
-    {
-        // Create the notification channel, but only on API 26+.
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-        {
-            var channelNameJava = new Java.Lang.String(secondChannelName);
-            var channel = new NotificationChannel(secondChannelId, channelNameJava, NotificationImportance.Default)
+            firstChannel.EnableVibration(true);
+            
+            var secondChannel = new NotificationChannel(secondChannelId, channelNameJava, NotificationImportance.Default)
             {
                 Description = secondChannelDescription,
             };
-            channel.EnableVibration(false);
-            channel.SetSound(null, null);
+            secondChannel.EnableVibration(false);
+            secondChannel.SetSound(null, null);
             // Register the channel
-            NotificationManager manager = (NotificationManager)Platform.AppContext.GetSystemService(Context.NotificationService);
-            manager.CreateNotificationChannel(channel);
-            secondChannelInitialized = true;
+            manager.CreateNotificationChannel(firstChannel);
+            manager.CreateNotificationChannel(secondChannel);
+            channelInitialized = true;
         }
     }
 
