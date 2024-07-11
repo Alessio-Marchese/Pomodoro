@@ -14,9 +14,4 @@ public class NotificationPermission : Permissions.BasePlatformPermission
             return result.ToArray();
         }
     }
-
-    public static async Task Check()
-    {
-        await Permissions.RequestAsync<NotificationPermission>();
-    }
 }

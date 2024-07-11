@@ -14,7 +14,6 @@ namespace Pomodoro
         protected override void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            NotificationPermission.Check();
             CreateNotificationFromIntent(Intent);
             this.RequestedOrientation = ScreenOrientation.Portrait;
         }
@@ -22,7 +21,6 @@ namespace Pomodoro
         protected override void OnNewIntent(Intent? intent)
         {
             base.OnNewIntent(intent);
-
             CreateNotificationFromIntent(intent);
         }
 
