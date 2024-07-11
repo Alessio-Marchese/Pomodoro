@@ -10,9 +10,9 @@ namespace Pomodoro.Platforms.Android;
 
 public class NotificationManagerService : INotificationManagerService
 {
-    const string channelId = "Notifications";
-    const string channelName = "Notifications";
-    const string channelDescription = "The default channel for notifications";
+    const string firstChannelId = "Notifications";
+    const string firstChannelName = "Notifications";
+    const string firstChannelDescription = "The default channel for notifications";
 
     const string secondChannelId = "Progress";
     const string secondChannelName = "Progress";
@@ -36,7 +36,6 @@ public class NotificationManagerService : INotificationManagerService
     {
         if (Instance == null)
         {
-            
             CreateNotificationChannel();
             compatManager = NotificationManagerCompat.From(Platform.AppContext);
             Instance = this;
@@ -136,7 +135,7 @@ public class NotificationManagerService : INotificationManagerService
             else
             {
                 builder
-                    .SetChannelId(channelId)
+                    .SetChannelId(firstChannelId)
                     .SetOngoing(false)
                     .SetAutoCancel(true)
                     .SetContentText("Timer completato!")
@@ -158,19 +157,24 @@ public class NotificationManagerService : INotificationManagerService
         if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
         {
             NotificationManager manager = (NotificationManager)Platform.AppContext.GetSystemService(Context.NotificationService);
-            var channelNameJava = new Java.Lang.String(channelName);
-            var firstChannel = new NotificationChannel(channelId, channelNameJava, NotificationImportance.Default)
+            var firstChannelNameJava = new Java.Lang.String(firstChannelName);
+            var firstChannel = new NotificationChannel(firstChannelId, firstChannelNameJava, NotificationImportance.Default)
             {
-                Description = channelDescription
+                Description = firstChannelDescription,
+                LockscreenVisibility = NotificationVisibility.Public,
+                
+
             };
             firstChannel.EnableVibration(true);
-            
-            var secondChannel = new NotificationChannel(secondChannelId, channelNameJava, NotificationImportance.Default)
+            var secondChannelNameJava = new Java.Lang.String(secondChannelName);
+            var secondChannel = new NotificationChannel(secondChannelId, secondChannelNameJava, NotificationImportance.Default)
             {
                 Description = secondChannelDescription,
+                LockscreenVisibility = NotificationVisibility.Public
             };
             secondChannel.EnableVibration(false);
             secondChannel.SetSound(null, null);
+
             // Register the channel
             manager.CreateNotificationChannel(firstChannel);
             manager.CreateNotificationChannel(secondChannel);
