@@ -173,6 +173,7 @@ public class PomodoroTimer
         ElapsedMilliseconds = 0;
         FormattedTime = GetCurrentTime();
         Break();
+        NotifyChange.HomeRefresh();
     }
 
     public static PomodoroTimer GetInstance(INotificationManagerService notificationManagerService)
