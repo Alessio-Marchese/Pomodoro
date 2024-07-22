@@ -5,6 +5,7 @@ namespace Pomodoro.Entities;
 
 public class PomodoroTimer
 {
+    public string Name { get; set; } = string.Empty;
     public TimeSpan Time { get; set; }
     public string FormattedTime { get; set; } = string.Empty;
     private Timer Timer { get; set; }
@@ -76,29 +77,35 @@ public class PomodoroTimer
     public void SetProduction()
     {
         NotificationManager.DeleteCurrentNotification();
+        Name = "Production";
         ElapsedMilliseconds = 0;
         CalculateStrokeDashOffset();
         Time = new TimeSpan(0, 0, 0, Preferences.Get("Production", ProductionLength), DelayLength);
         FormattedTime = GetCurrentTime();
         Timer.Stop();
+        IsActive = false;
     }
     public void SetShortPause()
     {
         NotificationManager.DeleteCurrentNotification();
+        Name = "ShortPause";
         ElapsedMilliseconds = 0;
         CalculateStrokeDashOffset();
         Time = new TimeSpan(0, 0, 0, Preferences.Get("ShortPause", ShortPauseLength), DelayLength);
         FormattedTime = GetCurrentTime();
         Timer.Stop();
+        IsActive = false;
     }
     public void SetLongPause()
     {
         NotificationManager.DeleteCurrentNotification();
+        Name = "LongPause";
         ElapsedMilliseconds = 0;
         CalculateStrokeDashOffset();
         Time = new TimeSpan(0, 0, 0, Preferences.Get("LongPause", LongPauseLength), DelayLength);
         FormattedTime = GetCurrentTime();
         Timer.Stop();
+        IsActive = false;
     }
     public void SetAutopilot()
     {
@@ -159,7 +166,18 @@ public class PomodoroTimer
         }
         else
         {
-            ResetCurrentTimer();
+            switch (Name.ToUpper())
+            {
+                case "PRODUCTION":
+                    SetProduction();
+                    break;
+                case "SHORTPAUSE":
+                    SetShortPause();
+                    break;
+                case "LONGPAUSE":
+                    SetLongPause();
+                    break;
+            }
             NotifyChange.HomeRefresh();
         }
     }
@@ -168,6 +186,7 @@ public class PomodoroTimer
     {
         ElapsedMilliseconds = 0;
         FormattedTime = GetCurrentTime();
+        CalculateStrokeDashOffset();
         Break();
         NotifyChange.HomeRefresh();
     }
