@@ -50,21 +50,20 @@
         if(changingValue.Name.ToUpper().Equals(Production.Name.ToUpper()))
         {
             Production.Time = newValue;
-            Preferences.Set("Production", Production.Time);
+            Preferences.Set("Production", newValue);
+            pomodoroTimer.SetProduction();
         }
         else if (changingValue.Name.ToUpper().Equals(ShortPause.Name.ToUpper()))
         {
             ShortPause.Time = newValue;
-            Preferences.Set("ShortPause", ShortPause.Time);
+            Preferences.Set("ShortPause", newValue);
+            pomodoroTimer.SetShortPause();
         }
         else if (changingValue.Name.ToUpper().Equals(LongPause.Name.ToUpper()))
         {
             LongPause.Time = newValue;
-            Preferences.Set("LongPause", LongPause.Time);
-        }
-        if(pomodoroTimer.Name.ToUpper().Equals(changingValue.Name.ToUpper()))
-        {
-            pomodoroTimer.EditTime(new TimeSpan(0, 0, 0, newValue, PomodoroTimer.DelayLength));
+            Preferences.Set("LongPause", newValue);
+            pomodoroTimer.SetLongPause();
         }
         IsChanging = false;
     }

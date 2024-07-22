@@ -5,15 +5,15 @@ namespace Pomodoro.Entities;
 
 public class PomodoroTimer
 {
-    public string Name { get; set; } = string.Empty;
     public TimeSpan Time { get; set; }
     public string FormattedTime { get; set; } = string.Empty;
     private Timer Timer { get; set; }
     public bool IsAutopilot { get; set; }
-    public int ElapsedMilliseconds { get; set; }
+    public int ElapsedMilliseconds { get; set; } = 10000;
 
     public bool IsActive = false;
     public int AutopilotState;
+    public int StrokeDashOffset;
 
     //Services
     private static INotificationManagerService NotificationManager;
@@ -30,6 +30,7 @@ public class PomodoroTimer
         {
             NotificationManager = notificationManager;
             AutopilotState = Preferences.Get("AutopilotState", 0);
+            CalculateStrokeDashOffset();
             Timer = new(TimerLength);
             Timer.Elapsed += ReduceMilliseconds;
             Timer.AutoReset = true;
@@ -51,6 +52,7 @@ public class PomodoroTimer
         {
            ElapsedMilliseconds += TimerLength;
            FormattedTime = GetCurrentTime();
+            CalculateStrokeDashOffset();
             NotificationManager.SendNotification("Timer", this.FormattedTime);
             NotifyChange.HomeRefresh();
         }
@@ -74,8 +76,8 @@ public class PomodoroTimer
     public void SetProduction()
     {
         NotificationManager.DeleteCurrentNotification();
-        Name = "Production";
         ElapsedMilliseconds = 0;
+        CalculateStrokeDashOffset();
         Time = new TimeSpan(0, 0, 0, Preferences.Get("Production", ProductionLength), DelayLength);
         FormattedTime = GetCurrentTime();
         Timer.Stop();
@@ -84,7 +86,7 @@ public class PomodoroTimer
     {
         NotificationManager.DeleteCurrentNotification();
         ElapsedMilliseconds = 0;
-        Name = "ShortPause";
+        CalculateStrokeDashOffset();
         Time = new TimeSpan(0, 0, 0, Preferences.Get("ShortPause", ShortPauseLength), DelayLength);
         FormattedTime = GetCurrentTime();
         Timer.Stop();
@@ -93,7 +95,7 @@ public class PomodoroTimer
     {
         NotificationManager.DeleteCurrentNotification();
         ElapsedMilliseconds = 0;
-        Name = "LongPause";
+        CalculateStrokeDashOffset();
         Time = new TimeSpan(0, 0, 0, Preferences.Get("LongPause", LongPauseLength), DelayLength);
         FormattedTime = GetCurrentTime();
         Timer.Stop();
@@ -133,12 +135,6 @@ public class PomodoroTimer
         AutopilotState = 0;
         Preferences.Set("AutopilotState", 0);
         SetAutopilot();
-    }
-    public void EditTime(TimeSpan time)
-    {
-        Time = time;
-        FormattedTime = GetCurrentTime();
-        NotifyChange.HomeRefresh();
     }
 
     public string GetCurrentTime()
@@ -183,5 +179,11 @@ public class PomodoroTimer
             Instance = new PomodoroTimer(notificationManagerService);
         }
         return Instance;
+    }
+
+    public void CalculateStrokeDashOffset()
+    {
+        double percentageElapsed = ElapsedMilliseconds / Time.TotalMilliseconds;
+        StrokeDashOffset = (int)(282.6 * percentageElapsed);
     }
 }
