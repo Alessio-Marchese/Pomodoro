@@ -1,20 +1,60 @@
 ﻿@using Pomodoro.Entities
 
-<div style="display: flex; justify-content: center;">
-    <svg width="250" height="250" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="45" stroke="#51c5cf" stroke-width="5" fill="white"
-                stroke-dasharray="282.6" stroke-dashoffset="@pomodoroTimer.StrokeDashOffset"
-                transform="rotate(-90 50 50)" @onclick="PauseOrResume"/>
-        <text x="50" y="55" text-anchor="middle" font-size="16" fill="#51c5cf" style="display:@(pomodoroTimer.IsActive ? "block" : "none");" @onclick="PauseOrResume">
+<div class="container">
+    <svg viewBox="0 0 100 100">
+        <circle class="circle"
+                cx="50" cy="50" r="@PomodoroTimer.CircleRadius"
+                stroke-dasharray="@pomodoroTimer.StrokeDashOffSet"
+                stroke-dashoffset="@pomodoroTimer.CurrentStrokeDashOffet"
+                transform="rotate(-90 50 50)" @onclick="PauseOrResume" />
+        <text class="text" x="50" y="55" style="display:@(pomodoroTimer.IsActive ? "block" : "none");" @onclick="PauseOrResume">
             @pomodoroTimer.FormattedTime
         </text>
-        <foreignObject x="35" y="35" width="30" height="30" style="display:@(pomodoroTimer.IsActive ? "none" : "block");" @onclick="PauseOrResume">
-            <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
-                <i class="bi bi-play-fill" style="font-size: 2rem; color: #51c5cf;"></i>
+        <foreignObject x="37" y="35" width="30" height="30" style="display:@(pomodoroTimer.IsActive ? "none" : "block");" @onclick="PauseOrResume">
+            <div xmlns="http://www.w3.org/1999/xhtml" class="play-button">
+                <i class="bi bi-play-fill play-icon"></i>
             </div>
         </foreignObject>
     </svg>
 </div>
+
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        width: 100vw;
+        height: auto;
+    }
+
+    .circle {
+        stroke: #51c5cf;
+        stroke-width: 5;
+        fill: white;
+    }
+
+    .text {
+        text-anchor: middle;
+        font-size: 16px;
+        fill: #51c5cf;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .play-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+    }
+
+    .play-icon {
+        font-size: 2rem;
+        color: #51c5cf;
+    }
+</style>
 
 @code {
     [Parameter]

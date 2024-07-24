@@ -8,9 +8,9 @@
 <ConsumingCircle pomodoroTimer="@pomodoroTimer"></ConsumingCircle>
 @if(!pomodoroTimer.IsAutopilot)
 {
-<button class="btn btn-secondary" @onclick="@pomodoroTimer.SetProduction">PRODUCTION</button>
-<button class="btn btn-secondary" @onclick="@pomodoroTimer.SetShortPause">SHORT PAUSE</button>
-<button class="btn btn-secondary" @onclick="@pomodoroTimer.SetLongPause">LONG PAUSE</button>
+    <button class="btn btn-secondary" @onclick="@pomodoroTimer.SetProduction">PRODUCTION @Preferences.Get("Production", PomodoroTimer.ProductionLength)</button>
+    <button class="btn btn-secondary" @onclick="@pomodoroTimer.SetShortPause">SHORT PAUSE @Preferences.Get("ShortPause", PomodoroTimer.ShortPauseLength)</button>
+    <button class="btn btn-secondary" @onclick="@pomodoroTimer.SetLongPause">LONG PAUSE @Preferences.Get("LongPause", PomodoroTimer.LongPauseLength)</button>
 }
 else
 {

@@ -7,20 +7,20 @@
 <h3>Settings</h3>
 <div class="container mt-5">
     <div class="row">
-        <div class="col text-center square-col" @onclick="() => SetChangingValue(Production)">
-            <p>@Production.Time</p>
+        <div class="col text-center square-col" @onclick='() => SetChangingValue(ProductionTime, "Production")'>
+            <p>@ProductionTime</p>
         </div>
-        <div class="col text-center square-col" @onclick="() => SetChangingValue(ShortPause)">
-            <p>@ShortPause.Time</p>
+        <div class="col text-center square-col" @onclick='() => SetChangingValue(ShortPauseTime, "ShortPause")'>
+            <p>@ShortPauseTime</p>
         </div>
-        <div class="col text-center square-col" @onclick="() => SetChangingValue(LongPause)">
-            <p>@LongPause.Time</p>
+        <div class="col text-center square-col" @onclick='() => SetChangingValue(LongPauseTime, "LongPause")'>
+            <p>@LongPauseTime</p>
         </div>
     </div>
 </div>
 @if(IsChanging)
 {
-    <ModifyTimer Value="changingValue.Time" Save="@SaveChangedValue"></ModifyTimer>
+    <ModifyTimer Value="ChangingTimerValue" Save="@SaveChangedValue"></ModifyTimer>
 }
 
 
@@ -37,39 +37,42 @@
 @code{
     private bool IsChanging = false;
 
-    private PomodoroSettings? changingValue;
+    private int ProductionTime = Preferences.Get("Production", PomodoroTimer.ProductionLength);
 
-    private PomodoroSettings Production = new ("Production",Preferences.Get("Production", PomodoroTimer.ProductionLength));
+    private int ShortPauseTime = Preferences.Get("ShortPause", PomodoroTimer.ShortPauseLength);
 
-    private PomodoroSettings ShortPause = new ("ShortPause", Preferences.Get("ShortPause", PomodoroTimer.ShortPauseLength));
+    private int LongPauseTime = Preferences.Get("LongPause", PomodoroTimer.LongPauseLength);
 
-    private PomodoroSettings LongPause = new ("LongPause", Preferences.Get("LongPause", PomodoroTimer.LongPauseLength));
+    private int ChangingTimerValue;
+
+    private string ChangingTimerName = String.Empty;
 
     private void SaveChangedValue(int newValue)
     {
-        if(changingValue.Name.ToUpper().Equals(Production.Name.ToUpper()))
+        if(ChangingTimerName.ToUpper().Equals("PRODUCTION"))
         {
-            Production.Time = newValue;
             Preferences.Set("Production", newValue);
+            ProductionTime = newValue;
             pomodoroTimer.SetProduction();
         }
-        else if (changingValue.Name.ToUpper().Equals(ShortPause.Name.ToUpper()))
+        else if (ChangingTimerName.ToUpper().Equals("SHORTPAUSE"))
         {
-            ShortPause.Time = newValue;
             Preferences.Set("ShortPause", newValue);
+            ShortPauseTime = newValue;
             pomodoroTimer.SetShortPause();
         }
-        else if (changingValue.Name.ToUpper().Equals(LongPause.Name.ToUpper()))
+        else if (ChangingTimerName.ToUpper().Equals("LONGPAUSE"))
         {
-            LongPause.Time = newValue;
             Preferences.Set("LongPause", newValue);
+            LongPauseTime = newValue;
             pomodoroTimer.SetLongPause();
         }
         IsChanging = false;
     }
-    private void SetChangingValue(PomodoroSettings pomodoroTimer)
+    private void SetChangingValue(int time, string name)
     {
-        changingValue = pomodoroTimer;
+        ChangingTimerValue = time;
+        ChangingTimerName = name;
         IsChanging = true;
     }
 }

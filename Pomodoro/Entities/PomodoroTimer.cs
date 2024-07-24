@@ -14,7 +14,8 @@ public class PomodoroTimer
 
     public bool IsActive = false;
     public int AutopilotState;
-    public int StrokeDashOffset;
+    public double StrokeDashOffSet = Math.Round(2 * Math.PI * CircleRadius);
+    public int CurrentStrokeDashOffet;
 
     //Services
     private static INotificationManagerService NotificationManager;
@@ -25,6 +26,8 @@ public class PomodoroTimer
     public const int ShortPauseLength = 5;
     public const int LongPauseLength = 10;
     public const int DelayLength = 0;
+    public const int CircleRadius = 46;
+    
     private PomodoroTimer(INotificationManagerService notificationManager)
     {
         if(Instance == null)
@@ -203,6 +206,6 @@ public class PomodoroTimer
     public void CalculateStrokeDashOffset()
     {
         double percentageElapsed = ElapsedMilliseconds / Time.TotalMilliseconds;
-        StrokeDashOffset = (int)(282.6 * percentageElapsed);
+        CurrentStrokeDashOffet = (int)(StrokeDashOffSet * percentageElapsed);
     }
 }
