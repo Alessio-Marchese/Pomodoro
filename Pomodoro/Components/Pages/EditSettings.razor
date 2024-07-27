@@ -1,79 +1,120 @@
 ﻿@page "/settings"
+@using Pomodoro.Components.Layout
 @using Pomodoro.Components.Pages.SmallComponents
 @using Pomodoro.Entities
 @using Pomodoro.Services
 @inject PomodoroTimer pomodoroTimer
 
-<h3>Settings</h3>
 <div class="container mt-5">
     <div class="row">
-        <div class="col text-center square-col" @onclick='() => SetChangingValue(ProductionTime, "Production")'>
-            <p>@ProductionTime</p>
+        <div class="col text-center">
+            <i class="bi bi-plus-circle-fill custom-icon" @onclick="IncreaseProduction"></i>
+            <div class="square-col">
+                <p>@ProductionTime</p>
+            </div>
+            <i class="bi bi-dash-circle-fill custom-icon" @onclick="DecreaseProduction"></i>
         </div>
-        <div class="col text-center square-col" @onclick='() => SetChangingValue(ShortPauseTime, "ShortPause")'>
-            <p>@ShortPauseTime</p>
+        <div class="col text-center">
+            <i class="bi bi-plus-circle-fill custom-icon" @onclick="IncreaseShortPause"></i>
+            <div class="square-col">
+                <p>@ShortPauseTime</p>
+            </div>
+            <i class="bi bi-dash-circle-fill custom-icon" @onclick="DecreaseShortPause"></i>
         </div>
-        <div class="col text-center square-col" @onclick='() => SetChangingValue(LongPauseTime, "LongPause")'>
-            <p>@LongPauseTime</p>
+        <div class="col text-center">
+            <i class="bi bi-plus-circle-fill custom-icon" @onclick="IncreaseLongPause"></i>
+            <div class="square-col">
+                <p>@LongPauseTime</p>
+            </div>
+            <i class="bi bi-dash-circle-fill custom-icon" @onclick="DecreaseLongPause"></i>
         </div>
     </div>
 </div>
-@if(IsChanging)
-{
-    <ModifyTimer Value="ChangingTimerValue" Save="@SaveChangedValue"></ModifyTimer>
-}
 
 
 <style>
     .square-col {
         font-size: 45px;
         text-align: center;
-        border: 2px, solid, black;
+        border: 3px, solid, white;
+        border-radius: 5px;
+        color: white;
         margin-left: 5px;
         margin-right: 5px;
+    }
+
+    .custom-icon {
+        color: white;
+        font-size: 35px;
+        margin-top: 7px;
+        margin-bottom: 7px;
     }
 </style>
 
 @code{
-    private bool IsChanging = false;
-
     private int ProductionTime = Preferences.Get("Production", PomodoroTimer.ProductionLength);
 
     private int ShortPauseTime = Preferences.Get("ShortPause", PomodoroTimer.ShortPauseLength);
 
     private int LongPauseTime = Preferences.Get("LongPause", PomodoroTimer.LongPauseLength);
 
-    private int ChangingTimerValue;
-
-    private string ChangingTimerName = String.Empty;
-
-    private void SaveChangedValue(int newValue)
+    protected override void OnInitialized()
     {
-        if(ChangingTimerName.ToUpper().Equals("PRODUCTION"))
-        {
-            Preferences.Set("Production", newValue);
-            ProductionTime = newValue;
-            pomodoroTimer.SetProduction();
-        }
-        else if (ChangingTimerName.ToUpper().Equals("SHORTPAUSE"))
-        {
-            Preferences.Set("ShortPause", newValue);
-            ShortPauseTime = newValue;
-            pomodoroTimer.SetShortPause();
-        }
-        else if (ChangingTimerName.ToUpper().Equals("LONGPAUSE"))
-        {
-            Preferences.Set("LongPause", newValue);
-            LongPauseTime = newValue;
-            pomodoroTimer.SetLongPause();
-        }
-        IsChanging = false;
+        base.OnInitialized();
     }
-    private void SetChangingValue(int time, string name)
+
+    private void IncreaseProduction()
     {
-        ChangingTimerValue = time;
-        ChangingTimerName = name;
-        IsChanging = true;
+        if (ProductionTime + 1 < 100)
+        {
+            ProductionTime++;
+            Preferences.Set("Production", ProductionTime);
+        }
+    }
+
+    private void DecreaseProduction()
+    {
+        if (ProductionTime - 1 > 0)
+        {
+            ProductionTime--;
+            Preferences.Set("Production", ProductionTime);
+        }
+    }
+
+    private void IncreaseShortPause()
+    {
+        if (ShortPauseTime + 1 < 100)
+        {
+            ShortPauseTime++;
+            Preferences.Set("ShortPause", ShortPauseTime);
+        }
+    }
+
+    private void DecreaseShortPause()
+    {
+        if (ShortPauseTime - 1 > 0)
+        {
+            ShortPauseTime--;
+            Preferences.Set("ShortPause", ShortPauseTime);
+        }
+    }
+
+    private void IncreaseLongPause()
+    {
+        if (LongPauseTime + 1 < 100)
+        {
+            LongPauseTime++;
+            Preferences.Set("LongPause", LongPauseTime);
+        }
+    }
+
+    private void DecreaseLongPause()
+    {
+        if (LongPauseTime - 1 > 0)
+        {
+            LongPauseTime--;
+            Preferences.Set("LongPause", LongPauseTime);
+        }
     }
 }
 

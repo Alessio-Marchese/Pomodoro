@@ -1,13 +1,14 @@
 ﻿@page "/"
 @using System.Timers
+@using Pomodoro.Components.Layout
 @using Pomodoro.Entities
 @using Pomodoro.Components.Pages.SmallComponents
 @using Pomodoro.Services
 @inject PomodoroTimer pomodoroTimer
 
-<div class="outer-container-mt">
+<div class="outer-container-mt mt-5">
         <div class="icon-container">
-            <i class="bi bi-arrow-down-up" @onclick="SwitchAutopilot"></i>
+        <i class="bi bi-code" @onclick="SwitchAutopilot"></i>
         </div>
         <div class="paragraph-container">
             @if (pomodoroTimer.IsAutopilot)
@@ -28,7 +29,7 @@
         @if(!pomodoroTimer.IsActive)
         {
                 <div class="icon-container">
-                <i class="bi bi-arrow-down-up" @onclick="SwitchTimer"></i>
+                <i class="bi bi-code" @onclick="SwitchTimer"></i>
                 </div>
                 <div class="paragraph-container">
                     <div class="paragraph-near-icon" @onclick="SwitchTimer"><span class="fw-bold">@GetTimerName()</span> @GetTimerLength() Min</div>
@@ -40,6 +41,9 @@
                 @GetTimerName()
             </div>
         }  
+    </div>
+    <div class="outer-container-mt">
+        <button type="button" class="btn btn-outline-light" @onclick="@pomodoroTimer.ResetCurrentTimer">Reset Timer</button>
     </div>
 }
 else
@@ -154,8 +158,6 @@ else
     .reset-buttons-container {
         margin-top: 15px;
     }
-
-
 </style>
 
 @code {
