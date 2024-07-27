@@ -1,4 +1,5 @@
 ﻿@using Pomodoro.Entities
+@using Pomodoro.Services
 
 <div class="container">
     <svg viewBox="0 0 100 100">
@@ -28,15 +29,15 @@
     }
 
     .circle {
-        stroke: #cdcdcd;
+        stroke: @AppStyleConfig.CurrentThemeItems;
         stroke-width: 5;
-        fill: #404040;
+        fill: @AppStyleConfig.CurrentThemeBackground;
     }
 
     .text {
         text-anchor: middle;
         font-size: 16px;
-        fill: #cdcdcd;
+        fill: @AppStyleConfig.CurrentThemeItems;
     }
 
     .hidden {
@@ -53,7 +54,7 @@
 
     .play-icon {
         font-size: 2rem;
-        color: #cdcdcd;
+        color: @AppStyleConfig.CurrentThemeItems;
     }
 </style>
 

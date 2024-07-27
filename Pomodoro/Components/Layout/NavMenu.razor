@@ -1,4 +1,5 @@
-﻿<div class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
+﻿@using Pomodoro.Services
+<div class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
     
         @if(IsHomePage)
         {
@@ -21,6 +22,7 @@
 
     .navbar-brand i {
         font-size: 1.5em;
+        color: @AppStyleConfig.CurrentThemeItems;
     }
 
     .navbar-brand {
@@ -30,4 +32,10 @@
 
 @code {
     private bool IsHomePage = true;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        NotifyChange.NavBarChange += () => InvokeAsync(StateHasChanged);
+    }
 }

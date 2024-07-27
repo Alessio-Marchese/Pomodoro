@@ -43,7 +43,7 @@
         }  
     </div>
     <div class="outer-container-mt">
-        <button type="button" class="btn btn-outline-light" @onclick="@pomodoroTimer.ResetCurrentTimer">Reset Timer</button>
+        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton" @onclick="@pomodoroTimer.ResetCurrentTimer">Reset Timer</button>
     </div>
 }
 else
@@ -106,8 +106,8 @@ else
         </div>
     </div>
     <div class="outer-container-mt">
-        <button type="button" class="btn btn-outline-light btn-sm reset-autopilot-button" @onclick="@pomodoroTimer.ResetAutopilotState">Reset Autopilot</button>
-        <button type="button" class="btn btn-outline-light btn-sm reset-timer-button" @onclick="@pomodoroTimer.ResetCurrentTimer">Reset Timer</button>
+        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton btn-sm reset-autopilot-button" @onclick="@pomodoroTimer.ResetAutopilotState">Reset Autopilot</button>
+        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton btn-sm reset-timer-button" @onclick="@pomodoroTimer.ResetCurrentTimer">Reset Timer</button>
     </div>
 }
 
@@ -128,14 +128,14 @@ else
     .icon-container {
         justify-content: center;
         align-items: center;
-        color: #cdcdcd;
+        color: @AppStyleConfig.CurrentThemeItems;
     }
 
     .paragraph-container {
         justify-content: center;
         align-items: center;
         font-size: 15px;
-        color: #cdcdcd;
+        color: @AppStyleConfig.CurrentThemeItems;
     }
 
     .paragraph-near-icon {
@@ -157,6 +157,10 @@ else
 
     .reset-buttons-container {
         margin-top: 15px;
+    }
+
+    html,body{
+        background-color: @AppStyleConfig.CurrentThemeBackground !important;
     }
 </style>
 
