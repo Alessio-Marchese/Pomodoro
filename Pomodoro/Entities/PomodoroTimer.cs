@@ -62,18 +62,21 @@ public class PomodoroTimer
         }
         else
         { 
-            NotifyChange.TimerCompleted();
+            //NotifyChange.TimerCompleted();
+            RestoreTimer();
         }
     }
     public void Break()
     {
         IsActive = false;
+        NotifyChange.HomeRefresh();
         NotificationManager.SendNotification("Timer", FormattedTime);
         Timer.Stop();
     }
     public void Start()
     {
         IsActive = true;
+        NotifyChange.HomeRefresh();
         NotificationManager.SendNotification("Timer", FormattedTime);
         Timer.Start();
     }
@@ -132,9 +135,6 @@ public class PomodoroTimer
             case 5:
                 SetLongPause();
                 break;
-            default:
-                ResetAutopilotState();
-                break;
 
 
         }
@@ -159,12 +159,12 @@ public class PomodoroTimer
             if (AutopilotState < 5)
             {
                 AutopilotState++;
-                SetAutopilot();
             }
             else
             {
                 AutopilotState = 0;
             }
+            SetAutopilot();
             Preferences.Set("AutopilotState", AutopilotState);
         }
         else
@@ -190,7 +190,7 @@ public class PomodoroTimer
         ElapsedMilliseconds = 0;
         FormattedTime = GetCurrentTime();
         CalculateStrokeDashOffset();
-        Break();
+        Timer.Stop();
         NotifyChange.HomeRefresh();
     }
 

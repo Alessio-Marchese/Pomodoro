@@ -9,7 +9,6 @@
             <div>Congratulazioni per aver completato il timer!</div>
             <button class="btn btn-primary mt-auto mb-3" @onclick="() => 
                 {
-                    pomodoroTimer.RestoreTimer();
                     IsShowing = false;
                     InvokeAsync(StateHasChanged);
                 }">OK</button>
