@@ -9,6 +9,9 @@ public class AppStyleConfig
     private const string DarkBootstrapButton = "dark";
     private const string DarkTheme = "#404040";
     private const string LightTheme = "white";
+    private const string MoonColor = "darkblue";
+    private const string SunColor = "orange";
+    private const string DefaultMoonSunColor = "grey";
 
     public static void SetDarkTheme()
     {
@@ -28,5 +31,23 @@ public class AppStyleConfig
         Preferences.Set("CurrentThemeBackground", CurrentThemeBackground);
         Preferences.Set("CurrentThemeItems", CurrentThemeItems);
         Preferences.Set("CurrentBootstrapButton", CurrentBootstrapButton);
+    }
+
+    public static string GetMoonColor()
+    {
+        if(CurrentThemeBackground.Equals(DarkTheme))
+        {
+            return MoonColor;
+        }
+        return DefaultMoonSunColor;
+    }
+
+    public static string GetSunColor()
+    {
+        if (CurrentThemeBackground.Equals(LightTheme))
+        {
+            return SunColor;
+        }
+        return DefaultMoonSunColor;
     }
 }
