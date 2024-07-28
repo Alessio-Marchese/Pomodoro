@@ -2,6 +2,7 @@
 using Android.Content.PM;
 using Android.OS;
 using Android.Content;
+using Pomodoro.Services;
 namespace Pomodoro
 {
     [Activity(LaunchMode = LaunchMode.SingleTop, Theme = "@style/Maui.SplashTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
@@ -12,6 +13,10 @@ namespace Pomodoro
             base.OnCreate(savedInstanceState);
             CreateNotificationFromIntent(Intent);
             this.RequestedOrientation = ScreenOrientation.Portrait;
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+            {
+                Window.SetStatusBarColor(Android.Graphics.Color.ParseColor(AppStyleConfig.CurrentThemeBackground));
+            }
         }
 
         protected override void OnNewIntent(Intent? intent)
