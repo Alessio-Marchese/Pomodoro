@@ -1,11 +1,9 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Graphics;
-using Android.Media;
 using Android.OS;
 using AndroidX.Core.App;
 using Pomodoro.Entities;
-
 namespace Pomodoro.Platforms.Android;
 
 public class NotificationManagerService : INotificationManagerService
@@ -26,6 +24,8 @@ public class NotificationManagerService : INotificationManagerService
     int pendingIntentId = 0;
     int actionPendingIntentId = 0;
 
+    MyRingtoneManager ringtoneManager;
+
     NotificationManagerCompat compatManager;
 
     public event EventHandler NotificationReceived;
@@ -36,6 +36,7 @@ public class NotificationManagerService : INotificationManagerService
     {
         if (Instance == null)
         {
+            ringtoneManager = new MyRingtoneManager();
             CreateNotificationChannel();
             compatManager = NotificationManagerCompat.From(Platform.AppContext);
             Instance = this;
@@ -140,8 +141,7 @@ public class NotificationManagerService : INotificationManagerService
                     .SetAutoCancel(true)
                     .SetContentText("Timer completato!")
                     .SetProgress(0, 0, false);
-                Ringtone? r = RingtoneManager.GetRingtone(Platform.AppContext, RingtoneManager.GetDefaultUri(RingtoneType.Notification));
-                r?.Play();
+                ringtoneManager.PlayCurrentNotificationSound();
                 if (Build.VERSION.SdkInt < BuildVersionCodes.O)
                 {
                     builder

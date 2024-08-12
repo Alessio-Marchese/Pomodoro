@@ -13,7 +13,7 @@ public class MyBroadcastReceiver : BroadcastReceiver
         }
         else if(intent.Action == "RESUME")
         {
-            PomodoroTimer.Instance.Start();
+            PomodoroTimer.Instance.Resume();
         }
         if(intent.Action == "RESET")
         {

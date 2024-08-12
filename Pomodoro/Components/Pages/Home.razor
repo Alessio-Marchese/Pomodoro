@@ -5,6 +5,7 @@
 @using Pomodoro.Components.Pages.SmallComponents
 @using Pomodoro.Services
 @inject PomodoroTimer pomodoroTimer
+@inject IStatusBarService StatusBarService
 
 <div class="outer-container-mt mt-5">
         <div class="icon-container">
@@ -171,6 +172,8 @@ else
     {
         base.OnInitialized();
         NotifyChange.OnChange += () => InvokeAsync(StateHasChanged);
+        NotifyChange.NavBarRefresh();
+        StatusBarService.RefreshColor();
     }
     private void SetTimer(ChangeEventArgs e)
     {

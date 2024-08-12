@@ -5,6 +5,7 @@
 @using Pomodoro.Services
 @inject PomodoroTimer pomodoroTimer
 @inject IStatusBarService StatusBarService
+@inject IRingtoneManagerService RingtoneService
 
 
 <div class="container">
@@ -39,6 +40,15 @@
         </div>
         <div class="col theme-square">
             <i class="bi bi-brightness-low-fill sun-icon" @onclick="SetLightTheme"></i>
+        </div>
+    </div>
+    <p class="title">Sound</p>
+    <div class="row">
+        <div class="col sound-square" @onclick="SetDefaultSound" style="background: @AppStyleConfig.GetDefaultSoundBackground();">
+            Default
+        </div>
+        <div class="col sound-square" @onclick="SetCustomSound" style="background: @AppStyleConfig.GetCustomSoundBackground();">
+            Custom
         </div>
     </div>
 </div>
@@ -97,6 +107,19 @@
         margin-right: 15px;
     }
 
+    .sound-square {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 140px;
+        height: 85px;
+        border: 2px solid rgba(0,0,0,0.1);
+        border-radius: 5px;
+        margin-left: 15px;
+        margin-right: 15px;
+        color: @AppStyleConfig.CurrentThemeItems;
+    }
+
     .sun-icon {
         font-size: 120px;
         color: @AppStyleConfig.GetSunColor();
@@ -105,6 +128,11 @@
     .moon-icon {
         font-size: 80px;
         color: @AppStyleConfig.GetMoonColor();
+    }
+
+    .sound-square-paragraph {
+        font-weight: bolder;
+        color: @AppStyleConfig.CurrentThemeItems
     }
 
     html, body {
@@ -196,6 +224,28 @@
         AppStyleConfig.SetLightTheme();
         NotifyChange.NavBarRefresh();
         StatusBarService.RefreshColor();
+    }
+
+    private void SetDefaultSound()
+    {
+        if(pomodoroTimer.IsDefaultSound)
+        {
+            return;
+        }
+        pomodoroTimer.IsDefaultSound = true;
+        Preferences.Set("IsDefaultSound", 1);
+        RingtoneService.PlayCurrentNotificationSound();
+    }
+
+    private void SetCustomSound()
+    {
+        if (!pomodoroTimer.IsDefaultSound)
+        {
+            return;
+        }
+        pomodoroTimer.IsDefaultSound = false;
+        Preferences.Set("IsDefaultSound", 0);
+        RingtoneService.PlayCurrentNotificationSound();
     }
 }
 

@@ -11,6 +11,7 @@ public class PomodoroTimer
     private Timer Timer { get; set; }
     public bool IsAutopilot { get; set; }
     public int ElapsedMilliseconds { get; set; } = 10000;
+    public bool IsDefaultSound { get; set; }
 
     public bool IsActive = false;
     public int AutopilotState;
@@ -32,6 +33,7 @@ public class PomodoroTimer
     {
         if(Instance == null)
         {
+            IsDefaultSound = Preferences.Get("IsDefaultSound", 1) == 0 ? false : true;
             NotificationManager = notificationManager;
             AutopilotState = Preferences.Get("AutopilotState", 0);
             CalculateStrokeDashOffset();
@@ -61,7 +63,7 @@ public class PomodoroTimer
             NotifyChange.HomeRefresh();
         }
         else
-        { 
+        {
             //NotifyChange.TimerCompleted();
             RestoreTimer();
         }
@@ -75,6 +77,14 @@ public class PomodoroTimer
     }
     public void Start()
     {
+        NotificationManager.DeleteCurrentNotification();
+        IsActive = true;
+        NotifyChange.HomeRefresh();
+        NotificationManager.SendNotification("Timer", FormattedTime);
+        Timer.Start();
+    }
+    public void Resume()
+    {
         IsActive = true;
         NotifyChange.HomeRefresh();
         NotificationManager.SendNotification("Timer", FormattedTime);
@@ -82,7 +92,6 @@ public class PomodoroTimer
     }
     public void SetProduction()
     {
-        NotificationManager.DeleteCurrentNotification();
         Name = "Production";
         ElapsedMilliseconds = 0;
         CalculateStrokeDashOffset();
@@ -93,7 +102,6 @@ public class PomodoroTimer
     }
     public void SetShortPause()
     {
-        NotificationManager.DeleteCurrentNotification();
         Name = "ShortPause";
         ElapsedMilliseconds = 0;
         CalculateStrokeDashOffset();
@@ -104,7 +112,6 @@ public class PomodoroTimer
     }
     public void SetLongPause()
     {
-        NotificationManager.DeleteCurrentNotification();
         Name = "LongPause";
         ElapsedMilliseconds = 0;
         CalculateStrokeDashOffset();
@@ -187,6 +194,7 @@ public class PomodoroTimer
 
     public void ResetCurrentTimer()
     {
+        IsActive = false;
         ElapsedMilliseconds = 0;
         FormattedTime = GetCurrentTime();
         CalculateStrokeDashOffset();

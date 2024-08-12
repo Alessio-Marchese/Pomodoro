@@ -24,6 +24,7 @@ namespace Pomodoro
 #if ANDROID
                 builder.Services.AddSingleton<INotificationManagerService, Pomodoro.Platforms.Android.NotificationManagerService>();
                 builder.Services.AddSingleton<IStatusBarService, Pomodoro.Platforms.Android.StatusBarService>();
+                builder.Services.AddSingleton<IRingtoneManagerService, Pomodoro.Platforms.Android.MyRingtoneManager>();
 #endif
 
             builder.Services.AddBlazorWebViewDeveloperTools();

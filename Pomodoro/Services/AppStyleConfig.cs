@@ -1,4 +1,6 @@
-﻿namespace Pomodoro.Services;
+﻿using Pomodoro.Entities;
+
+namespace Pomodoro.Services;
 
 public class AppStyleConfig
 {
@@ -12,6 +14,8 @@ public class AppStyleConfig
     private const string MoonColor = "#011044";
     private const string SunColor = "#da6700";
     private const string DefaultMoonSunColor = "grey";
+    private const string SoundBgDarkTheme = "rgba(0,0,0,0.1);";
+    private const string SoundBgLightTheme = "rgba(255,255,255,0);";
 
     public static void SetDarkTheme()
     {
@@ -58,5 +62,57 @@ public class AppStyleConfig
             return true;
         }
         return false;
+    }
+
+    public static string GetDefaultSoundBackground()
+    {
+        if (CurrentThemeBackground.Equals(DarkTheme))
+        {
+            if (PomodoroTimer.Instance.IsDefaultSound)
+            {
+                return SoundBgDarkTheme;
+            }
+            else
+            {
+                return SoundBgLightTheme; 
+            }
+        }
+        else
+        {
+            if (PomodoroTimer.Instance.IsDefaultSound)
+            {
+                return SoundBgDarkTheme;
+            }
+            else
+            {
+                return SoundBgLightTheme;
+            }
+        }
+    }
+
+    public static string GetCustomSoundBackground()
+    {
+        if (CurrentThemeBackground.Equals(DarkTheme))
+        {
+            if(!PomodoroTimer.Instance.IsDefaultSound)
+            {
+                return SoundBgDarkTheme;
+            }
+            else
+            {
+                return SoundBgLightTheme;
+            }
+        }
+        else
+        {
+            if (!PomodoroTimer.Instance.IsDefaultSound)
+            {
+                return SoundBgDarkTheme;
+            }
+            else
+            {
+                return SoundBgLightTheme;
+            }
+        }
     }
 }

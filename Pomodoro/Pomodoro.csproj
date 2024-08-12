@@ -70,6 +70,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <MauiAsset Include="Platforms\Android\Resources\Raw\custom_sound.mp3" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
