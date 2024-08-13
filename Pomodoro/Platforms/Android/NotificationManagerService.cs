@@ -100,8 +100,8 @@ public class NotificationManagerService : INotificationManagerService
             .SetContentIntent(pendingIntent)
             .SetContentTitle(title)
             .SetContentText(message)
-            .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.dotnet_bot))
-            .SetSmallIcon(Resource.Drawable.notification_action_background);
+            .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Raw.logo))
+            .SetSmallIcon(Resource.Drawable.m3_tabs_rounded_line_indicator);
         if (Build.VERSION.SdkInt < BuildVersionCodes.O)
         {
             builder.SetSound(null);
