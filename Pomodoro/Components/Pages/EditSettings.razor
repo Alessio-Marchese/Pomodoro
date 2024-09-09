@@ -12,22 +12,25 @@
     <p class="top-title">Timer</p>
     <div class="row">
         <div class="col text-center">
+            <p class="timer-paragraph">Produzione</p>
             <i class="bi bi-plus-circle-fill top-icon" @onclick="IncreaseProduction"></i>
-            <div class="square-col">
+            <div class="small-square">
                 <p>@ProductionTime</p>
             </div>
             <i class="bi bi-dash-circle-fill bottom-icon" @onclick="DecreaseProduction"></i>
         </div>
         <div class="col text-center">
+            <p class="timer-paragraph">Pausa Breve</p>
             <i class="bi bi-plus-circle-fill top-icon" @onclick="IncreaseShortPause"></i>
-            <div class="square-col">
+            <div class="small-square">
                 <p>@ShortPauseTime</p>
             </div>
             <i class="bi bi-dash-circle-fill bottom-icon" @onclick="DecreaseShortPause"></i>
         </div>
         <div class="col text-center">
+            <p class="timer-paragraph">Pausa Lunga</p>
             <i class="bi bi-plus-circle-fill top-icon" @onclick="IncreaseLongPause"></i>
-            <div class="square-col">
+            <div class="small-square">
                 <p>@LongPauseTime</p>
             </div>
             <i class="bi bi-dash-circle-fill bottom-icon" @onclick="DecreaseLongPause"></i>
@@ -35,20 +38,26 @@
     </div>
     <p class="title">Themes</p>
     <div class="row">
-        <div class="col theme-square" @onclick="SetDarkTheme">
+        <div class="col big-square" @onclick="SetDarkTheme">
             <i class="bi bi-moon-fill moon-icon"></i>
         </div>
-        <div class="col theme-square">
+        <div class="col big-square">
             <i class="bi bi-brightness-low-fill sun-icon" @onclick="SetLightTheme"></i>
         </div>
     </div>
     <p class="title">Sound</p>
     <div class="row">
-        <div class="col sound-square" @onclick="SetDefaultSound" style="background: @AppStyleConfig.GetDefaultSoundBackground();">
+        <div class="col rectangle" @onclick="SetDefaultSound" style="background: @AppStyleConfig.GetDefaultSoundBackground();">
             Default
         </div>
-        <div class="col sound-square" @onclick="SetCustomSound" style="background: @AppStyleConfig.GetCustomSoundBackground();">
+        <div class="col rectangle" @onclick="SetCustomSound" style="background: @AppStyleConfig.GetCustomSoundBackground();">
             Custom
+        </div>
+    </div>
+    <p class="title">Altro</p>
+    <div class="row">
+        <div class="col rectangle">
+            Tutorial
         </div>
     </div>
 </div>
@@ -61,7 +70,6 @@
         font-weight: bolder;
         color: @AppStyleConfig.CurrentThemeItems;
         margin-bottom: 10px;
-        margin-top: 45px;
     }
 
     .title {
@@ -71,7 +79,7 @@
         color: @AppStyleConfig.CurrentThemeItems;
         margin-top: 45px;
     }
-    .square-col {
+    .small-square {
         font-size: 45px;
         text-align: center;
         background: rgba(0,0,0,0.1);
@@ -94,7 +102,7 @@
         margin-bottom: 7px;
     }
 
-    .theme-square {
+    .big-square {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -107,7 +115,7 @@
         margin-right: 15px;
     }
 
-    .sound-square {
+    .rectangle {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -118,6 +126,11 @@
         margin-left: 15px;
         margin-right: 15px;
         color: @AppStyleConfig.CurrentThemeItems;
+    }
+
+    .timer-paragraph {
+        color: @AppStyleConfig.CurrentThemeItems;
+        font-weight: bold;
     }
 
     .sun-icon {

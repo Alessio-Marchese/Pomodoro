@@ -100,8 +100,8 @@ public class NotificationManagerService : INotificationManagerService
             .SetContentIntent(pendingIntent)
             .SetContentTitle(title)
             .SetContentText(message)
-            .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.abc_ab_share_pack_mtrl_alpha))
-            .SetSmallIcon(Resource.Drawable.m3_tabs_rounded_line_indicator);
+            .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.abc_star_black_48dp))
+            .SetSmallIcon(Resource.Drawable.abc_star_black_48dp);
         if (Build.VERSION.SdkInt < BuildVersionCodes.O)
         {
             builder.SetSound(null);
