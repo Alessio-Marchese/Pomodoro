@@ -220,6 +220,17 @@ public class PomodoroTimer
         NotifyChange.HomeRefresh();
     }
 
+    public void ResetCurrentTimerFromNotification()
+    {
+        IsActive = false;
+        ElapsedMilliseconds = 0;
+        FormattedTime = GetCurrentTime();
+        CalculateStrokeDashOffset();
+        Timer.Stop();
+        NotifyChange.HomeRefresh();
+        NotificationManager.SendNotification("Timer", FormattedTime);
+    }
+
 
 
     public static PomodoroTimer GetInstance(INotificationManagerService notificationManagerService)

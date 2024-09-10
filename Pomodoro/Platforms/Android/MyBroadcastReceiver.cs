@@ -17,7 +17,7 @@ public class MyBroadcastReceiver : BroadcastReceiver
         }
         if(intent.Action == "RESET")
         {
-            PomodoroTimer.Instance.ResetCurrentTimer();
+            PomodoroTimer.Instance.ResetCurrentTimerFromNotification();
         }
     }
 }
