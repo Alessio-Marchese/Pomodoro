@@ -14,11 +14,11 @@
         <div class="paragraph-container">
             @if (pomodoroTimer.IsAutopilot)
             {
-                <span @onclick="SwitchAutopilot" class="fw-bold paragraph-near-icon">Autopilot</span>
+                <span @onclick="SwitchAutopilot" class="fw-bold paragraph-near-icon">Autopilota</span>
             }
             else
             {
-                <span @onclick="SwitchAutopilot" class="fw-bold paragraph-near-icon">Manual</span>
+                <span @onclick="SwitchAutopilot" class="fw-bold paragraph-near-icon">Manuale</span>
             }
         </div>
     </div>
@@ -107,8 +107,8 @@ else
         </div>
     </div>
     <div class="outer-container-mt">
-        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton btn-sm reset-autopilot-button" @onclick="@pomodoroTimer.ResetAutopilotState">Reset Autopilot</button>
-        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton btn-sm reset-timer-button" @onclick="@pomodoroTimer.ResetCurrentTimer">Reset Timer</button>
+        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton btn-sm reset-autopilot-button" @onclick="@pomodoroTimer.ResetAutopilotState">Ripristina Autopilota</button>
+        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton btn-sm reset-timer-button" @onclick="@pomodoroTimer.ResetCurrentTimer">Ripristina Progresso</button>
     </div>
 }
 
@@ -210,13 +210,13 @@ else
         switch(pomodoroTimer.Name.ToUpper())
         {
             case "PRODUCTION":
-                result = "Production";
+                result = "Produzione";
                 break;
             case "SHORTPAUSE":
-                result = "Short Pause";
+                result = "Pausa Breve";
                 break;
             case "LONGPAUSE":
-                result = "Long Pause";
+                result = "Pausa Lunga";
                 break;
         }
         return result;

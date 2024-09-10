@@ -36,7 +36,7 @@
             <i class="bi bi-dash-circle-fill bottom-icon" @onclick="DecreaseLongPause"></i>
         </div>
     </div>
-    <p class="title">Themes</p>
+    <p class="title">Temi</p>
     <div class="row">
         <div class="col big-square" @onclick="SetDarkTheme">
             <i class="bi bi-moon-fill moon-icon"></i>
@@ -45,19 +45,19 @@
             <i class="bi bi-brightness-low-fill sun-icon" @onclick="SetLightTheme"></i>
         </div>
     </div>
-    <p class="title">Sound</p>
+    <p class="title">Suono</p>
     <div class="row">
         <div class="col rectangle" @onclick="SetDefaultSound" style="background: @AppStyleConfig.GetDefaultSoundBackground();">
-            Default
+            Predefinito
         </div>
         <div class="col rectangle" @onclick="SetCustomSound" style="background: @AppStyleConfig.GetCustomSoundBackground();">
-            Custom
+            Personalizzato
         </div>
     </div>
     <p class="title">Altro</p>
     <div class="row">
         <div class="col rectangle">
-            Tutorial
+            Guida
         </div>
     </div>
 </div>
