@@ -125,19 +125,31 @@ public class PomodoroTimer
         CalculateStrokeDashOffset();
         Time = new TimeSpan(0, 0, 0, Preferences.Get("Production", ProductionLength), DelayLength);
         FormattedTime = GetCurrentTime();
+        if(IsActive)
+        {
+            NotificationManager.SendNotification("Timer", this.FormattedTime);
+        }
     }
     public void UpdateShortPause()
     {
         CalculateStrokeDashOffset();
         Time = new TimeSpan(0, 0, 0, Preferences.Get("ShortPause", ShortPauseLength), DelayLength);
         FormattedTime = GetCurrentTime();
+        if (IsActive)
+        {
+            NotificationManager.SendNotification("Timer", this.FormattedTime);
+        }
     }
     public void UpdateLongPause()
     {
         CalculateStrokeDashOffset();
         Time = new TimeSpan(0, 0, 0, Preferences.Get("LongPause", LongPauseLength), DelayLength); ;
         FormattedTime = GetCurrentTime();
-    }
+            if (IsActive)
+            {
+                NotificationManager.SendNotification("Timer", this.FormattedTime);
+            }
+        }
     public void SetAutopilot()
     {
         switch (AutopilotState)
