@@ -33,6 +33,7 @@ public class PomodoroTimer
     {
         if(Instance == null)
         {
+            IsAutopilot = Preferences.Get("IsAutopilot", false);
             IsDefaultSound = Preferences.Get("IsDefaultSound", 1) == 0 ? false : true;
             NotificationManager = notificationManager;
             AutopilotState = Preferences.Get("AutopilotState", 0);
