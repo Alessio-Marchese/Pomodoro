@@ -172,8 +172,6 @@ public class PomodoroTimer
             case 5:
                 SetLongPause();
                 break;
-
-
         }
         NotifyChange.HomeRefresh();
     }
