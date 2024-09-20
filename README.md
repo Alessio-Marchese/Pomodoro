@@ -1,3 +1,7 @@
+## 📋 Presentazione
+
+**In questo progetto personale, ho sviluppato un'app utilizzando .NET MAUI Hybrid Blazor. L'app è attualmente compatibile solo con dispositivi Android ed è stata testata su Android API 24. L'obiettivo principale è semplificare l'utilizzo del metodo Pomodoro, offrendo al contempo un'ampia personalizzazione. Gli utenti possono gestire manualmente le sessioni di lavoro tramite la modalità manuale, oppure affidarsi alla modalità autopilota, che gestisce automaticamente l'alternanza tra lavoro e pausa**.
+
 ## 🚀 Funzionalità Principali
 
 - **Avviare il timer**.
@@ -22,6 +26,7 @@
 ## 🔧 To-Do
 
 - **Aggiungere tutorial per il metodo Pomodoro**.
+- **Testare l'app su diverse API android**.
 
 ## 🎥 Video Presentazione
 
