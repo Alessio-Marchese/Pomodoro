@@ -44,7 +44,7 @@
         }  
     </div>
     <div class="outer-container-mt">
-        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton" @onclick="@pomodoroTimer.ResetCurrentTimer">Reset Timer</button>
+        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton" @onclick="@pomodoroTimer.ResetCurrentTimer">Ripristina Timer</button>
     </div>
 }
 else
@@ -108,7 +108,7 @@ else
     </div>
     <div class="outer-container-mt">
         <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton btn-sm reset-autopilot-button" @onclick="@pomodoroTimer.ResetAutopilotState">Ripristina Autopilota</button>
-        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton btn-sm reset-timer-button" @onclick="@pomodoroTimer.ResetCurrentTimer">Ripristina Progresso</button>
+        <button type="button" class="btn btn-outline-@AppStyleConfig.CurrentBootstrapButton btn-sm reset-timer-button" @onclick="@pomodoroTimer.ResetCurrentTimer">Ripristina Timer</button>
     </div>
 }
 
@@ -177,6 +177,10 @@ else
     }
     private void SetTimer(ChangeEventArgs e)
     {
+        if(e.Value is null)
+        {
+            return;
+        }
         pomodoroTimer.IsAutopilot = (bool)e.Value;
         if((bool)e.Value)
         {

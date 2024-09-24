@@ -10,7 +10,7 @@ public class PomodoroTimer
     public string FormattedTime { get; set; } = string.Empty;
     private Timer Timer { get; set; }
     public bool IsAutopilot { get; set; }
-    public int ElapsedMilliseconds { get; set; } = 10000;
+    public int ElapsedMilliseconds { get; set; }
     public bool IsDefaultSound { get; set; }
 
     public bool IsActive = false;
@@ -53,43 +53,18 @@ public class PomodoroTimer
             Instance = this;
         }
     }
-    private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
+    // Metodi Pubblici
+    public void Start()
     {
-        if (ElapsedMilliseconds < Time.TotalMilliseconds)
-        {
-           ElapsedMilliseconds += TimerLength;
-           FormattedTime = GetCurrentTime();
-            CalculateStrokeDashOffset();
-            NotificationManager.SendNotification("Timer", this.FormattedTime);
-            NotifyChange.HomeRefresh();
-        }
-        else
-        {
-            //NotifyChange.TimerCompleted();
-            RestoreTimer();
-        }
+        IsActive = true;
+        NotificationManager.SendNotification("Timer", FormattedTime);
+        Timer.Start();
     }
     public void Break()
     {
         IsActive = false;
-        NotifyChange.HomeRefresh();
         NotificationManager.SendNotification("Timer", FormattedTime);
         Timer.Stop();
-    }
-    public void Start()
-    {
-        NotificationManager.DeleteCurrentNotification();
-        IsActive = true;
-        NotifyChange.HomeRefresh();
-        NotificationManager.SendNotification("Timer", FormattedTime);
-        Timer.Start();
-    }
-    public void Resume()
-    {
-        IsActive = true;
-        NotifyChange.HomeRefresh();
-        NotificationManager.SendNotification("Timer", FormattedTime);
-        Timer.Start();
     }
     public void SetProduction()
     {
@@ -174,7 +149,6 @@ public class PomodoroTimer
                 SetLongPause();
                 break;
         }
-        NotifyChange.HomeRefresh();
     }
     public void ResetAutopilotState()
     {
@@ -182,12 +156,60 @@ public class PomodoroTimer
         Preferences.Set("AutopilotState", 0);
         SetAutopilot();
     }
-
-    public string GetCurrentTime()
+    public void ResetCurrentTimer()
     {
-        return Time.Subtract(TimeSpan.FromMilliseconds(ElapsedMilliseconds)).ToString(@"mm\:ss"); 
+        IsActive = false;
+        ElapsedMilliseconds = 0;
+        FormattedTime = GetCurrentTime();
+        CalculateStrokeDashOffset();
+        Timer.Stop();
+    }
+    public void ResetCurrentTimerFromNotification()
+    {
+        IsActive = false;
+        ElapsedMilliseconds = 0;
+        FormattedTime = GetCurrentTime();
+        CalculateStrokeDashOffset();
+        Timer.Stop();
+        NotificationManager.SendNotification("Timer", FormattedTime);
+    }
+    public static PomodoroTimer GetInstance(INotificationManagerService notificationManagerService)
+    {
+        if(Instance is null)
+        {
+            Instance = new PomodoroTimer(notificationManagerService);
+        }
+        return Instance;
     }
 
+    //Metodi privati
+
+    private void ReduceMilliseconds(Object source, ElapsedEventArgs e)
+    {
+        if (ElapsedMilliseconds < Time.TotalMilliseconds)
+        {
+            ElapsedMilliseconds += TimerLength;
+            FormattedTime = GetCurrentTime();
+            CalculateStrokeDashOffset();
+            NotificationManager.SendNotification("Timer", this.FormattedTime);
+            NotifyChange.HomeRefresh();
+        }
+        else
+        {
+            //NotifyChange.TimerCompleted();
+            RestoreTimer();
+        }
+    }
+    private string GetCurrentTime()
+    {
+        return Time.Subtract(TimeSpan.FromMilliseconds(ElapsedMilliseconds)).ToString(@"mm\:ss");
+    }
+    //Usato per ricalcolare la variabile che serve a visualizzare il progresso del timer
+    private void CalculateStrokeDashOffset()
+    {
+        double percentageElapsed = ElapsedMilliseconds / Time.TotalMilliseconds;
+        CurrentStrokeDashOffet = (int)(StrokeDashOffSet * percentageElapsed);
+    }
     public void RestoreTimer()
     {
         if (IsAutopilot)
@@ -201,6 +223,7 @@ public class PomodoroTimer
                 AutopilotState = 0;
             }
             SetAutopilot();
+            NotifyChange.HomeRefresh();
             Preferences.Set("AutopilotState", AutopilotState);
         }
         else
@@ -219,43 +242,5 @@ public class PomodoroTimer
             }
             NotifyChange.HomeRefresh();
         }
-    }
-
-    public void ResetCurrentTimer()
-    {
-        IsActive = false;
-        ElapsedMilliseconds = 0;
-        FormattedTime = GetCurrentTime();
-        CalculateStrokeDashOffset();
-        Timer.Stop();
-        NotifyChange.HomeRefresh();
-    }
-
-    public void ResetCurrentTimerFromNotification()
-    {
-        IsActive = false;
-        ElapsedMilliseconds = 0;
-        FormattedTime = GetCurrentTime();
-        CalculateStrokeDashOffset();
-        Timer.Stop();
-        NotifyChange.HomeRefresh();
-        NotificationManager.SendNotification("Timer", FormattedTime);
-    }
-
-
-
-    public static PomodoroTimer GetInstance(INotificationManagerService notificationManagerService)
-    {
-        if(Instance is null)
-        {
-            Instance = new PomodoroTimer(notificationManagerService);
-        }
-        return Instance;
-    }
-
-    public void CalculateStrokeDashOffset()
-    {
-        double percentageElapsed = ElapsedMilliseconds / Time.TotalMilliseconds;
-        CurrentStrokeDashOffet = (int)(StrokeDashOffSet * percentageElapsed);
     }
 }

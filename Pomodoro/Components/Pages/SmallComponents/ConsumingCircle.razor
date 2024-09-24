@@ -70,14 +70,7 @@
         }
         else
         {
-            if(pomodoroTimer.ElapsedMilliseconds == 0)
-            {
-                pomodoroTimer.Start();
-            }
-            else
-            {
-                pomodoroTimer.Resume();
-            }
+            pomodoroTimer.Start();
         }
     }
 }

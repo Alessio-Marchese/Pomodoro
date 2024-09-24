@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Content;
-using Android.Graphics;
 using Android.OS;
 using AndroidX.Core.App;
 using Pomodoro.Entities;
@@ -22,7 +21,6 @@ public class NotificationManagerService : INotificationManagerService
     bool channelInitialized = false;
     int messageId = 0;
     int pendingIntentId = 0;
-    int actionPendingIntentId = 0;
 
     MyRingtoneManager ringtoneManager;
 
@@ -100,7 +98,6 @@ public class NotificationManagerService : INotificationManagerService
             .SetContentIntent(pendingIntent)
             .SetContentTitle(title)
             .SetContentText(message)
-            .SetLargeIcon(BitmapFactory.DecodeResource(Platform.AppContext.Resources, Resource.Drawable.abc_star_black_48dp))
             .SetSmallIcon(Resource.Drawable.abc_star_black_48dp);
         if (Build.VERSION.SdkInt < BuildVersionCodes.O)
         {
@@ -121,16 +118,16 @@ public class NotificationManagerService : INotificationManagerService
                     Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
                     actionIntent.SetAction("PAUSE");
                     PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, 0, actionIntent, pendingIntentFlags);
-                    builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Pause", actionPendingIntent);
+                    builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Pausa", actionPendingIntent);
                 }
                 else
                 {
                     Intent actionIntent = new Intent(Platform.AppContext, typeof(MyBroadcastReceiver));
                     actionIntent.SetAction("RESUME");
                     PendingIntent actionPendingIntent = PendingIntent.GetBroadcast(Platform.AppContext, 0, actionIntent, pendingIntentFlags);
-                    builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, pomodoroTimer.ElapsedMilliseconds == 0 ? "Start" : "Resume", actionPendingIntent);
+                    builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, pomodoroTimer.ElapsedMilliseconds == 0 ? "Avvia" : "Riprendi", actionPendingIntent);
                 }
-            builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Reset", resetPendingIntent);
+            builder.AddAction(Resource.Drawable.m3_radiobutton_ripple, "Ripristina", resetPendingIntent);
             compatManager?.Notify(messageId, builder.Build());
             }
             else
